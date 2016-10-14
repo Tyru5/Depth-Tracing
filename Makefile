@@ -3,21 +3,21 @@
 # CS410 :: intro to graphics
 
 CXX		= g++
-OBJS		= geonorm.o ModelObject.o PlyImage.o Transformation.o
+OBJS		=  raytracer.o ModelObject.o PlyImage.o Transformation.o
 DEBUG		= -g
 CPPFLAGS	= -Wall -std=c++11 -I. -c $(DEBUG)
 LDFLAGS		= -Wall $(DEBUG) # order of targets actualy matter
-EXE 		= pa1
+EXE 		= raytracer
 
-all: geonorm
+all: raytracer
 
-geonorm: $(OBJS)
-	$(CXX) $(LDFLAGS) $(OBJS) -o geonorm
+raytracer: $(OBJS)
+	$(CXX) $(LDFLAGS) $(OBJS) -o raytracer
 	@echo "-- Success!"
 
-geonorm.o: geonorm.cpp
+raytracer.o: raytracer.cpp
 	@echo "-- Compiling pa1 class..."
-	$(CXX) $(CPPFLAGS) geonorm.cpp
+	$(CXX) $(CPPFLAGS) raytracer.cpp
 
 ModelObject.o: ModelObject.cpp ModelObject.h
 	@echo "-- Compiling ModelObject class..."
@@ -33,7 +33,7 @@ Transformation.o: Transformation.cpp Transformation.h
 
 clean:
 	@echo "Cleaning up project directory ..."
-	rm -f $(OBJS) *~ geonorm
+	rm -f $(OBJS) *~ raytracer
 
 package:
 	@echo "Packaging up project directory..."
