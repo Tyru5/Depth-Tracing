@@ -19,3 +19,6 @@ color indicates relative distance from the image plane.
     * <models.ply> : Polygonal model object files.
     * The Chainfile has this format:
     * <output_file_name> : Name of the image our program will write.
+
+## 3. Example output
+![Example App Image](./elle.png)
