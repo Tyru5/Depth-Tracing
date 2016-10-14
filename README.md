@@ -4,7 +4,7 @@ color indicates relative distance from the image plane.
 
 ## 1. Build Config.
    Typing 'make all' will build all classes. --> will produce the exe. 'raytracer'
-   Typeing 'make clean' will rm all object files and exe.
+   Typing 'make clean' will rm all object files and exe.
 
 ## 2. To Run
 ###  raytracer <camera model> <models.ply*> <output_file_name>
