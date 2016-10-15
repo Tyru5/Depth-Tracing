@@ -3,7 +3,7 @@
 # CS410 :: intro to graphics
 
 CXX		= g++
-OBJS		=  raytracer.o ModelObject.o PlyImage.o Transformation.o
+OBJS		=  raytracer.o ModelObject.o PlyImage.o Transformation.o Camera.o
 DEBUG		= -g
 CPPFLAGS	= -Wall -std=c++11 -I. -c $(DEBUG)
 LDFLAGS		= -Wall $(DEBUG) # order of targets actualy matter
@@ -30,6 +30,11 @@ PlyImage.o:    PlyImage.cpp PlyImage.h
 Transformation.o: Transformation.cpp Transformation.h
 	@echo "-- Compiling Transformation class..."
 	$(CXX) $(CPPFLAGS) Transformation.cpp
+
+# P3:
+Camera.o: Camera.cpp Camer.h
+	@echo "-- Compiling Camera class..."
+	$(CXX) $(CPPFLAGS) Camer.cpp
 
 clean:
 	@echo "Cleaning up project directory ..."

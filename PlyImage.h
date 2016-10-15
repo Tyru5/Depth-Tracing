@@ -19,6 +19,9 @@ class PlyImage{
   void readPlyFile(const std::string& fileName, ModelObject &obj);
   void readData(std::ifstream &ifstr, ModelObject &obj);
   void writePlyFile(ModelObject& obj, const std::string& fileName, const std::string& fileSuffix);
+
+
+
   // class instance variables:
  private:
   std::string file_header;
@@ -28,6 +31,7 @@ class PlyImage{
   std::string type_of_element;
   std::string type_of_element2;
   std::string end_header;
+  
   int number_of_comments;
   std::vector<std::string> comment_vector;
   int number_of_properties;

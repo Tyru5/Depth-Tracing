@@ -151,7 +151,7 @@ void PlyImage::readPlyFile(const string& fileName, ModelObject &obj){
 
 }
 
-void PlyImage::readData(ifstream& istr, ModelObject& obj){ // ask about this later.
+void PlyImage::readData(ifstream& istr, ModelObject& obj){
 
   // reading in the verticies from the file:
   int rows_verts = obj.get_verticies();
@@ -163,7 +163,7 @@ void PlyImage::readData(ifstream& istr, ModelObject& obj){ // ask about this lat
   for(int r = 0; r < rows_verts; r++){
     for(int c = 0; c < 3; c++){
       if( !(istr >> list_verticies[r][c]) ){
-	       // cout << "Failed read when reading in the list of verticies" << endl;
+	// cout << "Failed read when reading in the list of verticies" << endl;
       }
     }
   }

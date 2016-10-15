@@ -21,32 +21,28 @@ void usage(char *something, string somethingElse);
 
 int main(int argc, char *argv[]){
 
-  if(argc != 2){
-    // usage(argv[0],"Wrong number of parameters!");
+  if(argc != 4){
+    usage(argv[0],"Wrong number of parameters!");
   }
 
-  // Instaniating classes:
+  // Instaniating class objects:
+  Camera cmra;
   PlyImage ply;
   ModelObject obj;
-  Transformation transf;
 
-  // Parse the file header, passig a ModelObject
-  ply.readPlyFile(argv[1], obj);
+  // Parse the Camera Model:
+  cmra.parseCameraSpecs( argv[1] );
+
+  // Parse the .ply file:
+  // ply.readPlyFile(argv[2], obj);
   
-  // lets center!
-  transf.center(obj);
-  ply.writePlyFile( obj, argv[1], "_centered.ply" ); // I do this so I only need to implement one write member function.
-
-  // lets round!
-  transf.rounding(obj);
-  ply.writePlyFile( obj, argv[1], "_rounded.ply"  );
-
+  
 
   return 0;
 }
 
 void usage(char *arg0, string message){
   cerr << endl << "Message: " << message << endl;
-  cerr << "One parameter: An input file name in the .ply file extension." << endl;
-  cerr << "Usage: " << arg0 << " input filename" << endl;
+  cerr << "3 parameters: Camera Model, An input file name in the .ply file extension. And lastly, the name of the image that the program will write." << endl;
+  cerr << "Usage: " << arg0 << " <camer model> <.ply file> <image_output_name>" << endl;
 }
