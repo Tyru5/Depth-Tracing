@@ -11,8 +11,8 @@
 #include <sstream>
 #include <algorithm> // std::remove
 #include <iterator> // for iterator
-#include <PlyImage.h>
-#include <ModelObject.h>
+#include "PlyImage.h"
+#include "ModelObject.h"
 
 // namespace
 using namespace std;

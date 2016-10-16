@@ -8,7 +8,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <ModelObject.h>
+#include "ModelObject.h"
 
 class PlyImage{
 

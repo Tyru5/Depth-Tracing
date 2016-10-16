@@ -7,14 +7,13 @@
 // include headers:
 #include <iostream>
 #include <string>
-#include <PlyImage.h>
-#include <ModelObject.h>
-#include <Transformation.h>
+#include "Camera.h"
+#include "PlyImage.h"
+#include "ModelObject.h"
+#include "Transformation.h"
+#include "Vector3d.h"
 
-using std::endl;
-using std::cout;
-using std::cerr;
-using std::string;
+using namespace std;
 
 // function declarations:
 void usage(char *something, string somethingElse);
@@ -22,7 +21,7 @@ void usage(char *something, string somethingElse);
 int main(int argc, char *argv[]){
 
   if(argc != 4){
-    usage(argv[0],"Wrong number of parameters!");
+    // usage(argv[0],"Wrong number of parameters!");
   }
 
   // Instaniating class objects:
@@ -35,8 +34,7 @@ int main(int argc, char *argv[]){
 
   // Parse the .ply file:
   // ply.readPlyFile(argv[2], obj);
-  
-  
+
 
   return 0;
 }
