@@ -60,6 +60,7 @@ class Vector3d{
 
   const Vector3d unitVector() const{
     const double mag = magnitude();
+    cout << "The mag" << mag << endl;
     return Vector3d(x/mag, y/mag, z/mag);
   }
 
@@ -123,7 +124,7 @@ inline Vector3d operator * (double factor, const Vector3d& a){
   return Vector3d( factor *a.x, factor*a.y, factor*a.z );
 }
 
-inline Vector3d operator / (const double div_factor, const Vector3d& a){
+inline Vector3d operator / (const Vector3d& a, const double div_factor){
   return Vector3d( a.x/div_factor, a.y/div_factor, a.z/div_factor);
 }
 

@@ -92,6 +92,43 @@ void Camera::parseCameraSpecs(const string& cameraModel){
 
 }
 
+
+void Camera::tt_origin(){
+
+  create4x4_identity_matrix();
+  Vector3d tempn = EYE;
+  tempn = -tempn;
+  if(DEBUG) cout << tempn << endl; 
+  ET[0][3] = tempn.x;
+  ET[1][3] = tempn.y;
+  ET[2][3] = tempn.z;
+
+  pprint_matrix(ET);
+  
+}
+
+void Camera::orient(){
+
+  /*
+    Going to use the process described in Lecture Week 5:
+    1) Point the z axis away --> Camera looks down the negative z axis:
+    We have two points in 3D --> The eye and the look at point
+    Gaze direction is L-E (however we are going to do E-L)
+    So W axis of RM is going to be defined as: W = E-L/||E-L|| <-- make it unit length
+  */
+
+  Vector3d Wt = (LOOKAP-EYE);
+  double mag = Wt.magnitude();
+  if(DEBUG) cout << "The mag is: " << mag << endl;
+  Vector3d W = Wt/mag;
+
+  cout << "W unit vector is: " << W << endl;
+  
+  
+}
+
+// ==================HELPER FUNCTIONS=========================
+
 void print_bounds(vector<int>& bp){
   for(int i = 0; i < static_cast<int>( bp.size() ); i++){
     cout << "bounds[" << i << "]:" << bp[i] << endl;
@@ -113,21 +150,6 @@ void pprint_matrix(const vector< vector<int> >& v){
   }
 
 }
-
-void Camera::tt_origin(){
-
-  create4x4_identity_matrix();
-  Vector3d tempn = EYE;
-  tempn = -tempn;
-  if(DEBUG) cout << tempn << endl; 
-  ET[0][3] = tempn.x;
-  ET[1][3] = tempn.y;
-  ET[2][3] = tempn.z;
-
-  pprint_matrix(ET);
-  
-}
-
 
 void Camera::create4x4_identity_matrix(){
 

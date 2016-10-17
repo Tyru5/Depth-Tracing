@@ -19,6 +19,7 @@ class Camera{
   void parseCameraSpecs(const std::string& cameraModel);
   void create4x4_identity_matrix();
   void tt_origin();
+  void orient();
   
   // class instance variables:
  private:
@@ -45,7 +46,7 @@ class Camera{
 
   // translation matrix for eye
   std::vector< std::vector<int> > ET;
-  
+  std::vector< std::vector<int> > RM;
 
 };
 

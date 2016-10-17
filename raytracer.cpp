@@ -33,6 +33,7 @@ int main(int argc, char *argv[]){
   cmra.parseCameraSpecs( argv[1] );
   // translate world coordinates to camera coordinates:
   cmra.tt_origin();
+  cmra.orient();
   
   // Parse the .ply file:
   // ply.readPlyFile(argv[2], obj);
