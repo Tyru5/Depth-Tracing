@@ -7,7 +7,6 @@
 // include headers:
 #include <iostream>
 #include <string>
-#include <Eigen/Dense> // Third party mplate library for linear algebra: matrices, vectors, numerical solvers, and related algorithms.
 #include "Camera.h"
 #include "PlyImage.h"
 #include "ModelObject.h"
