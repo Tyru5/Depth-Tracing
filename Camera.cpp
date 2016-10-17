@@ -72,7 +72,7 @@ void Camera::parseCameraSpecs(const string& cameraModel){
   getline(cmraModel, line);
   dist_stream << line;
   dist_stream >> dist_header >> dist;
-  if(DEBUG) cout << "The distance away from the image plane is: " << dist << endl;
+  if(DEBUG) cout << "The distance away from the image plane is: " << dist << "\n" <<  endl;
 
   // grab the bounds:
   vector< int > bounds(4);
@@ -108,7 +108,6 @@ void Camera::tt_origin(){
 }
 
 void Camera::orient(){
-
   /*
     Going to use the process described in Lecture Week 5:
     1) Point the z axis away --> Camera looks down the negative z axis:
@@ -121,9 +120,44 @@ void Camera::orient(){
   double mag = Wt.magnitude();
   if(DEBUG) cout << "The mag is: " << mag << endl;
   Vector3d W = Wt/mag;
+  if(DEBUG) cout << "W unit vector is: " << W << endl;
+  /* The U axis (horizontal axis) is perpendicular to a plane defined by UPV and W */
+  Vector3d Ut = crossProduct(UPV, W);
+  double mag2 = crossProduct(UPV, W).magnitude();
+  if(DEBUG) cout << "The mag2 is:" << mag2 << endl;
+  Vector3d U = Ut/mag2;
+  if(DEBUG) cout << "U unit vector is: " << U << endl;
 
-  cout << "W unit vector is: " << W << endl;
+  /*
+    Given the first two axis, the third is:
+    V = W X U
+  */
   
+  Vector3d V = crossProduct(W, U);
+  if(DEBUG) cout << "The V unit vector is: " << V << endl;
+
+  RM = vector< vector<int> >(4, vector<int>(4) );
+  RM[0][0] = U.x;
+  RM[0][1] = U.y;
+  RM[0][2] = U.z;
+  RM[0][3] = 0;
+
+  RM[1][0] = V.x;
+  RM[1][1] = V.y;
+  RM[1][2] = V.z;
+  RM[1][3] = 0;
+
+  RM[2][0] = W.x;
+  RM[2][1] = W.y;
+  RM[2][2] = W.z;
+  RM[2][3] = 0;
+
+  RM[3][0] = 0;
+  RM[3][1] = 0;
+  RM[3][2] = 0;
+  RM[3][3] = 1;
+
+  pprint_matrix(RM);
   
 }
 
