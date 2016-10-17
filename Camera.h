@@ -16,9 +16,9 @@ class Camera{
   // constructor:
   Camera(){};
   // member functions:
-  void parseCameraSpecs(const std::string& camerModel);
+  void parseCameraSpecs(const std::string& cameraModel);
   void create4x4_identity_matrix();
-
+  void tt_origin();
   
   // class instance variables:
  private:
@@ -44,7 +44,7 @@ class Camera{
   std::vector< int > resolution;
 
   // translation matrix for eye
-  std::vector< std::vector<int> > eye_translation;
+  std::vector< std::vector<int> > ET;
   
 
 };

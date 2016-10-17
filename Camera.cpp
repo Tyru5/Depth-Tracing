@@ -44,7 +44,8 @@ void Camera::parseCameraSpecs(const string& cameraModel){
 
   eye_stream << line;
   eye_stream >> eye_header >> x >> y >> z;
-  Vector3d EYE(x,y,z);
+  Vector3d a(x,y,z);
+  EYE = a;
   if(DEBUG) cout << "The eye / focal point is at: " << EYE << endl;
 
   // grab lookap:
@@ -52,7 +53,8 @@ void Camera::parseCameraSpecs(const string& cameraModel){
   getline(cmraModel, line);
   lookap_stream << line;
   lookap_stream >> look_header >> x >> y >> z;
-  Vector3d LOOKAP(x,y,z);
+  Vector3d b(x,y,z);
+  LOOKAP = b;
   if(DEBUG) cout << "The look at point is at: " << LOOKAP << endl;
 
 
@@ -61,7 +63,8 @@ void Camera::parseCameraSpecs(const string& cameraModel){
   getline(cmraModel, line);
   upv_stream << line;
   upv_stream >> supv >> x >> y >> z;
-  Vector3d UPV(x,y,z);
+  Vector3d c(x,y,z);
+  UPV = c;
   if(DEBUG) cout << "The up vector is at: " << UPV << endl;
 
   // grab distance away from image plane:
@@ -87,10 +90,7 @@ void Camera::parseCameraSpecs(const string& cameraModel){
   res_stream >> res_header >> resolution[0] >> resolution[1];
   if(DEBUG) print_res( resolution );
 
-  create4x4_identity_matrix();
-  
 }
-
 
 void print_bounds(vector<int>& bp){
   for(int i = 0; i < static_cast<int>( bp.size() ); i++){
@@ -105,18 +105,6 @@ void print_res(vector<int>& r){
   }
 }
 
-void Camera::create4x4_identity_matrix(){
-
-  // allocate memory for translation matrix:
-  eye_translation = vector< vector<int> >(4, vector<int>(4) );
-
-  // setting the diagonals to be 1:
-  for(int i = 0; i < 4; i++){
-    eye_translation[i][i] = 1;
-  }
-  
-}
-
 void pprint_matrix(const vector< vector<int> >& v){
   for(unsigned int y = 0; y < 4; y++){
     for(unsigned int x = 0; x < 4; x++)
@@ -125,3 +113,32 @@ void pprint_matrix(const vector< vector<int> >& v){
   }
 
 }
+
+void Camera::tt_origin(){
+
+  create4x4_identity_matrix();
+  Vector3d tempn = EYE;
+  tempn = -tempn;
+  if(DEBUG) cout << tempn << endl; 
+  ET[0][3] = tempn.x;
+  ET[1][3] = tempn.y;
+  ET[2][3] = tempn.z;
+
+  pprint_matrix(ET);
+  
+}
+
+
+void Camera::create4x4_identity_matrix(){
+
+  // allocate memory for translation matrix:
+  ET = vector< vector<int> >(4, vector<int>(4) );
+
+  // setting the diagonals to be 1:
+  for(int i = 0; i < 4; i++){
+    ET[i][i] = 1;
+  }
+  
+}
+
+
