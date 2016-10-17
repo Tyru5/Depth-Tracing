@@ -27,16 +27,18 @@ int main(int argc, char *argv[]){
   // Instaniating class objects:
   Camera cmra;
   PlyImage ply;
-  ModelObject obj;
+  ModelObject obj1;
 
   // Parse the Camera Model:
   cmra.parseCameraSpecs( argv[1] );
-  // translate world coordinates to camera coordinates:
-  cmra.tt_origin();
-  cmra.orient();
+  // Place Camera correctly:
+  cmra.tt_origin_orient();
   
   // Parse the .ply file:
-  // ply.readPlyFile(argv[2], obj);
+  ply.readPlyFile(argv[2], obj1);
+
+  // Translate the World Coordinates to Camera Coordinates:
+  cmra.translate_coordinates( obj1 );
 
   return 0;
 }

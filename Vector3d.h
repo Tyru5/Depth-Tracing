@@ -117,7 +117,7 @@ inline Vector3d crossProduct(const Vector3d& a, const Vector3d& b){
   return Vector3d(
 		  (a.y*b.z) - (a.z*b.y),
 		  (a.z*b.x) - (a.x*b.z),
-		  (a.x*b.x) - (a.y*b.x) );
+		  (a.x*b.y) - (a.y*b.x) );
 }
 
 inline Vector3d operator * (double factor, const Vector3d& a){

@@ -169,7 +169,7 @@ void PlyImage::readData(ifstream& istr, ModelObject& obj){
   }
 
 
-  // set ModelObject vertex list:
+  // set ModelObject vertex list -->  VERY IMPORTANT:
   obj.set_vertex_list(list_verticies);
 
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

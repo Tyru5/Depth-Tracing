@@ -9,7 +9,7 @@
 #include <string>
 #include <math.h> // for sqrt function
 #include <vector>
-#include <ModelObject.h>
+#include "ModelObject.h"
 
 // namespace
 using namespace std;
@@ -31,11 +31,11 @@ void ModelObject:: set_faces(int val){
   obj_faces = val;
 }
 
-void ModelObject::set_vertex_list(const std::vector< std::vector<double> >& val){
+void ModelObject::set_vertex_list(const vector< vector<double> >& val){
   vertex_list = val;
 }
 
-void ModelObject::set_faces_list(const std::vector<int>& val){
+void ModelObject::set_faces_list(const vector<int>& val){
   faces_list = val;
 }
 

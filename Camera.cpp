@@ -13,19 +13,18 @@
 #include <iterator> // for iterator
 #include "Camera.h"
 #include "Vector3d.h"
+#include "ModelObject.h"
 
 // namespace:
 using namespace std;
 
 // function declarations:
-void print_res(vector< int >& r);
-void print_bounds(vector< int >& pb);
+void print_res(const vector< int >& r);
+void print_bounds(const vector< int >& pb);
 void pprint_matrix(const vector< vector<int> >& v);
 
 // Macros:
 #define DEBUG true
-
-
 
 void Camera::parseCameraSpecs(const string& cameraModel){
 
@@ -93,21 +92,13 @@ void Camera::parseCameraSpecs(const string& cameraModel){
 }
 
 
-void Camera::tt_origin(){
-
-  create4x4_identity_matrix();
-  Vector3d tempn = EYE;
-  tempn = -tempn;
-  if(DEBUG) cout << tempn << endl; 
-  ET[0][3] = tempn.x;
-  ET[1][3] = tempn.y;
-  ET[2][3] = tempn.z;
-
-  pprint_matrix(ET);
+void Camera::tt_origin_orient(){
   
-}
-
-void Camera::orient(){
+  Vector3d eye = EYE;
+  eye = -eye;
+  if(DEBUG) cout << eye << endl; 
+  
+  
   /*
     Going to use the process described in Lecture Week 5:
     1) Point the z axis away --> Camera looks down the negative z axis:
@@ -115,8 +106,7 @@ void Camera::orient(){
     Gaze direction is L-E (however we are going to do E-L)
     So W axis of RM is going to be defined as: W = E-L/||E-L|| <-- make it unit length
   */
-
-  Vector3d Wt = (LOOKAP-EYE);
+  Vector3d Wt = (EYE-LOOKAP);
   double mag = Wt.magnitude();
   if(DEBUG) cout << "The mag is: " << mag << endl;
   Vector3d W = Wt/mag;
@@ -127,50 +117,57 @@ void Camera::orient(){
   if(DEBUG) cout << "The mag2 is:" << mag2 << endl;
   Vector3d U = Ut/mag2;
   if(DEBUG) cout << "U unit vector is: " << U << endl;
-
   /*
     Given the first two axis, the third is:
     V = W X U
   */
-  
-  Vector3d V = crossProduct(W, U);
+  Vector3d V = crossProduct(W,U);
   if(DEBUG) cout << "The V unit vector is: " << V << endl;
 
+  // Setting up rotation Matrix:
   RM = vector< vector<int> >(4, vector<int>(4) );
   RM[0][0] = U.x;
   RM[0][1] = U.y;
   RM[0][2] = U.z;
-  RM[0][3] = 0;
+  RM[0][3] = eye.x;
 
   RM[1][0] = V.x;
   RM[1][1] = V.y;
   RM[1][2] = V.z;
-  RM[1][3] = 0;
+  RM[1][3] = eye.y;
 
   RM[2][0] = W.x;
   RM[2][1] = W.y;
   RM[2][2] = W.z;
-  RM[2][3] = 0;
+  RM[2][3] = eye.z;
 
   RM[3][0] = 0;
   RM[3][1] = 0;
   RM[3][2] = 0;
   RM[3][3] = 1;
 
+  cout << "Final Matrix is: " << endl;
   pprint_matrix(RM);
+  
+}
+
+
+void Camera::translate_coordinates(const ModelObject& model){
+
+  
   
 }
 
 // ==================HELPER FUNCTIONS=========================
 
-void print_bounds(vector<int>& bp){
+void print_bounds(const vector<int>& bp){
   for(int i = 0; i < static_cast<int>( bp.size() ); i++){
     cout << "bounds[" << i << "]:" << bp[i] << endl;
   }
 }
 
 
-void print_res(vector<int>& r){
+void print_res(const vector<int>& r){
   for(int i = 0; i < static_cast<int>( r.size() ); i++){
     cout << "res[" << i << "]:" << r[i] << endl;
   }
@@ -184,17 +181,3 @@ void pprint_matrix(const vector< vector<int> >& v){
   }
 
 }
-
-void Camera::create4x4_identity_matrix(){
-
-  // allocate memory for translation matrix:
-  ET = vector< vector<int> >(4, vector<int>(4) );
-
-  // setting the diagonals to be 1:
-  for(int i = 0; i < 4; i++){
-    ET[i][i] = 1;
-  }
-  
-}
-
-

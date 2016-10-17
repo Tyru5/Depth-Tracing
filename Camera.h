@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 #include "Vector3d.h"
+#include "ModelObject.h"
 
 class Camera{
 
@@ -18,8 +19,9 @@ class Camera{
   // member functions:
   void parseCameraSpecs(const std::string& cameraModel);
   void create4x4_identity_matrix();
-  void tt_origin();
-  void orient();
+  void tt_origin_orient();
+  void translate_coordinates( const ModelObject& model);
+  
   
   // class instance variables:
  private:
@@ -45,9 +47,9 @@ class Camera{
   std::vector< int > resolution;
 
   // translation matrix for eye
-  std::vector< std::vector<int> > ET;
   std::vector< std::vector<int> > RM;
-
+  
+  
 };
 
 #endif // CAMERA_H_INCLUDE
