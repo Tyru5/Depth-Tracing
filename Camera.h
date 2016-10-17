@@ -17,7 +17,9 @@ class Camera{
   Camera(){};
   // member functions:
   void parseCameraSpecs(const std::string& camerModel);
+  void create4x4_identity_matrix();
 
+  
   // class instance variables:
  private:
   // location of the focal point
@@ -40,6 +42,9 @@ class Camera{
   int dist;
   std::vector< int > bounds;
   std::vector< int > resolution;
+
+  // translation matrix for eye
+  std::vector< std::vector<int> > eye_translation;
   
 
 };

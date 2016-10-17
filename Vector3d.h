@@ -107,7 +107,7 @@ inline Vector3d operator - (const Vector3d& a){
   return Vector3d(-a.x, -a.y, -a.z);
 }
 
-inline double dotProuct(const Vector3d& a, const Vector3d& b){
+inline double dotProduct(const Vector3d& a, const Vector3d& b){
   return ( (a.x*b.x) + (a.y*b.y) + (a.z*b.z) );
 }
 

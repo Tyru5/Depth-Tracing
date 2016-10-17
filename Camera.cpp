@@ -18,8 +18,9 @@
 using namespace std;
 
 // function declarations:
-void print_bounds(vector< int >& pb);
 void print_res(vector< int >& r);
+void print_bounds(vector< int >& pb);
+void pprint_matrix(const vector< vector<int> >& v);
 
 // Macros:
 #define DEBUG true
@@ -85,6 +86,8 @@ void Camera::parseCameraSpecs(const string& cameraModel){
   res_stream << line;
   res_stream >> res_header >> resolution[0] >> resolution[1];
   if(DEBUG) print_res( resolution );
+
+  create4x4_identity_matrix();
   
 }
 
@@ -100,4 +103,25 @@ void print_res(vector<int>& r){
   for(int i = 0; i < static_cast<int>( r.size() ); i++){
     cout << "res[" << i << "]:" << r[i] << endl;
   }
+}
+
+void Camera::create4x4_identity_matrix(){
+
+  // allocate memory for translation matrix:
+  eye_translation = vector< vector<int> >(4, vector<int>(4) );
+
+  // setting the diagonals to be 1:
+  for(int i = 0; i < 4; i++){
+    eye_translation[i][i] = 1;
+  }
+  
+}
+
+void pprint_matrix(const vector< vector<int> >& v){
+  for(unsigned int y = 0; y < 4; y++){
+    for(unsigned int x = 0; x < 4; x++)
+      cout << "\t" << v[y][x];
+    cout << "\n";
+  }
+
 }
