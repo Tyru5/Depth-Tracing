@@ -28,18 +28,19 @@ int main(int argc, char *argv[]){
   Camera cmra;
   PlyImage ply;
   ModelObject obj1;
+  Transformation trnsfrm;
 
   // Parse the Camera Model:
   cmra.parseCameraSpecs( argv[1] );
   // Place Camera correctly that is to say
   // Build Camera system origin and axes in world coordinates:
   cmra.tt_origin_orient();
-  
+
   // Parse the .ply file:
   ply.readPlyFile(argv[2], obj1);
 
   // Translate the World Coordinates to Camera Coordinates:
-  cmra.translate_coordinates( obj1 );
+  // cmra.translate_coordinates( obj1 );
 
   return 0;
 }

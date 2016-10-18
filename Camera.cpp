@@ -96,16 +96,16 @@ void Camera::parseCameraSpecs(const string& cameraModel){
 void Camera::tt_origin_orient(){
 
   // Build Camera system origin and axes in world coordinates:
-  
+
   Vector3d eye = EYE;
   eye = -eye;
-  if(DEBUG) cout << eye << endl; 
+  if(DEBUG) cout << eye << endl;
 
   eye_translation.resize(4,4);
   eye_translation << 1,0,0,eye.x, 0,1,0,eye.y, 0,0,1,eye.z, 0,0,0,1;
   if(DEBUG) cout << "eye_translation matrix = \n" << eye_translation << endl;
-  
-  
+
+
   /*
     Going to use the process described in Lecture Week 5:
     1) Point the z axis away --> Camera looks down the negative z axis:
@@ -140,14 +140,14 @@ void Camera::tt_origin_orient(){
   RM = RMt*eye_translation;
   cout << "Final Matrix is: \n" << RM << endl;
 
-  
+
 }
 
 
 void Camera::translate_coordinates(const ModelObject& model){
 
-  
-  
+
+
 }
 
 // ==================HELPER FUNCTIONS=========================
@@ -164,4 +164,3 @@ void print_res(const vector<int>& r){
     cout << "res[" << i << "]:" << r[i] << endl;
   }
 }
-

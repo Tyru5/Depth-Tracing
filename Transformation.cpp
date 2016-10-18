@@ -10,13 +10,15 @@
 #include <vector>
 #include <fstream> // Stream class to both read and write from/to files.
 #include <sstream>
-#include <Transformation.h>
-#include <PlyImage.h>
-#include <ModelObject.h>
+#include <Eigen/Dense>
+#include "Transformation.h"
+#include "PlyImage.h"
+#include "ModelObject.h"
 
 
 // namespace
 using namespace std;
+using Eigen::MatrixXd;
 
 // function prototypes:
 void center_title();
@@ -172,7 +174,6 @@ void Transformation::rounding(ModelObject& obj){
   print_std_dv(final_trans_std_x, final_trans_std_y, final_trans_std_z);
 
 }
-
 
 void center_title(){
   cout << "=== Before centering" << endl;

@@ -207,9 +207,9 @@ double ModelObject::std_dev(vector<double> list){
   for(int i = 0; i < obj_verticies; i++){
     element_mean_squared += pow( (list[i] - mean), 2 );
   }
-  
+
   double res = (element_mean_squared / obj_verticies);
-  
+
   return sqrt(res);
 }
 

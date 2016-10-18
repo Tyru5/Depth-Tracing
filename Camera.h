@@ -23,8 +23,8 @@ class Camera{
   void parseCameraSpecs(const std::string& cameraModel);
   void tt_origin_orient();
   void translate_coordinates( const ModelObject& model);
-  
-  
+
+
   // class instance variables:
  private:
   // location of the focal point
@@ -39,7 +39,7 @@ class Camera{
   std::string bounds_header;
   // res
   std::string res_header;
-  
+
   Vector3d EYE; // <-- class that I wrote
   Vector3d LOOKAP;
   Vector3d UPV;
@@ -52,8 +52,8 @@ class Camera{
   Matrix4d eye_translation;
   Matrix4d RMt;
   Matrix4d RM;
-  
-  
+
+
 };
 
 #endif // CAMERA_H_INCLUDE

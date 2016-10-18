@@ -163,7 +163,7 @@ void PlyImage::readData(ifstream& istr, ModelObject& obj){
   for(int r = 0; r < rows_verts; r++){
     for(int c = 0; c < 3; c++){
       if( !(istr >> list_verticies[r][c]) ){
-	// cout << "Failed read when reading in the list of verticies" << endl;
+      	// cout << "Failed read when reading in the list of verticies" << endl;
       }
     }
   }
