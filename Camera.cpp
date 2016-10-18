@@ -146,7 +146,7 @@ void Camera::tt_origin_orient(){
 
 void Camera::translate_coordinates(const ModelObject& model){
 
-
+  
 
 }
 
