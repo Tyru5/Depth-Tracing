@@ -134,12 +134,17 @@ void Camera::tt_origin_orient(){
   // Setting up rotation Matrix:
   RMt.resize(4,4);
   RMt << U.x,U.y,U.z,0, V.x,V.y,V.z,0, W.x,W.y,W.z,0, 0,0,0,1;
-  if(DEBUG) cout << "The RMt is = \n" << RMt << endl;
+  if(DEBUG){
+    cout << "The RMt is = \n" << RMt << endl;
+    Matrix4d test(4,4);
+    test = RMt.transpose() * RMt;
+    cout << "Really rotation matrix?\n" << test << endl;
+  }
+
 
   RM.resize(4,4);
   RM = RMt*eye_translation;
   cout << "Final Matrix is: \n" << RM << endl;
-
 
 }
 
