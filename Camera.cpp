@@ -11,20 +11,21 @@
 #include <sstream>
 #include <algorithm> // std::remove
 #include <iterator> // for iterator
+#include <Eigen/Dense>
 #include "Camera.h"
 #include "Vector3d.h"
 #include "ModelObject.h"
 
 // namespace:
 using namespace std;
+using Eigen::Matrix4d;
 
 // function declarations:
 void print_res(const vector< int >& r);
 void print_bounds(const vector< int >& pb);
-void pprint_matrix(const vector< vector<int> >& v);
 
 // Macros:
-#define DEBUG true
+#define DEBUG false
 
 void Camera::parseCameraSpecs(const string& cameraModel){
 
@@ -97,6 +98,10 @@ void Camera::tt_origin_orient(){
   Vector3d eye = EYE;
   eye = -eye;
   if(DEBUG) cout << eye << endl; 
+
+  eye_translation.resize(4,4);
+  eye_translation << 1,0,0,eye.x,0,1,0,eye.y,0,0,1,eye.z,0,0,0,1;
+  if(DEBUG) cout << "eye_translation matrix = \n" << eye_translation << endl;
   
   
   /*
@@ -125,29 +130,14 @@ void Camera::tt_origin_orient(){
   if(DEBUG) cout << "The V unit vector is: " << V << endl;
 
   // Setting up rotation Matrix:
-  RM = vector< vector<int> >(4, vector<int>(4) );
-  RM[0][0] = U.x;
-  RM[0][1] = U.y;
-  RM[0][2] = U.z;
-  RM[0][3] = eye.x;
+  RMt.resize(4,4);
+  RMt << U.x,U.y,U.z,0, V.x,V.y,V.z,0, W.x,W.y,W.z,0, 0,0,0,1;
+  if(DEBUG) cout << "The RMt is = \n" << RMt << endl;
 
-  RM[1][0] = V.x;
-  RM[1][1] = V.y;
-  RM[1][2] = V.z;
-  RM[1][3] = eye.y;
+  RM.resize(4,4);
+  RM = RMt*eye_translation;
+  cout << "Final Matrix is: \n" << RM << endl;
 
-  RM[2][0] = W.x;
-  RM[2][1] = W.y;
-  RM[2][2] = W.z;
-  RM[2][3] = eye.z;
-
-  RM[3][0] = 0;
-  RM[3][1] = 0;
-  RM[3][2] = 0;
-  RM[3][3] = 1;
-
-  cout << "Final Matrix is: " << endl;
-  pprint_matrix(RM);
   
 }
 
@@ -173,11 +163,3 @@ void print_res(const vector<int>& r){
   }
 }
 
-void pprint_matrix(const vector< vector<int> >& v){
-  for(unsigned int y = 0; y < 4; y++){
-    for(unsigned int x = 0; x < 4; x++)
-      cout << "\t" << v[y][x];
-    cout << "\n";
-  }
-
-}

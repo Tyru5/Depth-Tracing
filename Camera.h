@@ -8,8 +8,11 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <Eigen/Dense>
 #include "Vector3d.h"
 #include "ModelObject.h"
+
+using Eigen::Matrix4d;
 
 class Camera{
 
@@ -18,7 +21,6 @@ class Camera{
   Camera(){};
   // member functions:
   void parseCameraSpecs(const std::string& cameraModel);
-  void create4x4_identity_matrix();
   void tt_origin_orient();
   void translate_coordinates( const ModelObject& model);
   
@@ -47,7 +49,9 @@ class Camera{
   std::vector< int > resolution;
 
   // translation matrix for eye
-  std::vector< std::vector<int> > RM;
+  Matrix4d eye_translation;
+  Matrix4d RMt;
+  Matrix4d RM;
   
   
 };
