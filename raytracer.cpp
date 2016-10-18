@@ -31,7 +31,8 @@ int main(int argc, char *argv[]){
 
   // Parse the Camera Model:
   cmra.parseCameraSpecs( argv[1] );
-  // Place Camera correctly:
+  // Place Camera correctly that is to say
+  // Build Camera system origin and axes in world coordinates:
   cmra.tt_origin_orient();
   
   // Parse the .ply file:

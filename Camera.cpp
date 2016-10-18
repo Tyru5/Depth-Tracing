@@ -94,13 +94,15 @@ void Camera::parseCameraSpecs(const string& cameraModel){
 
 
 void Camera::tt_origin_orient(){
+
+  // Build Camera system origin and axes in world coordinates:
   
   Vector3d eye = EYE;
   eye = -eye;
   if(DEBUG) cout << eye << endl; 
 
   eye_translation.resize(4,4);
-  eye_translation << 1,0,0,eye.x,0,1,0,eye.y,0,0,1,eye.z,0,0,0,1;
+  eye_translation << 1,0,0,eye.x, 0,1,0,eye.y, 0,0,1,eye.z, 0,0,0,1;
   if(DEBUG) cout << "eye_translation matrix = \n" << eye_translation << endl;
   
   

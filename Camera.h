@@ -40,7 +40,7 @@ class Camera{
   // res
   std::string res_header;
   
-  Vector3d EYE;
+  Vector3d EYE; // <-- class that I wrote
   Vector3d LOOKAP;
   Vector3d UPV;
 
