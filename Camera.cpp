@@ -19,15 +19,22 @@
 // namespace:
 using namespace std;
 using Eigen::Matrix4d;
-using Eigen::VectorXd;
 
 
 // function declarations:
 void print_res(const vector< int >& r);
-void print_bounds(const vector< int >& pb);
+void print_bounds(const vector< double >& pb);
 
 // Macros:
 #define DEBUG true
+
+#define bottom bounds[0]
+#define left   bounds[1]
+#define top    bounds[2]
+#define right  bounds[3]
+// Number of pixels horizontal and vertical
+#define width  res[0]
+#define height res[1]
 
 void Camera::parseCameraSpecs(const string& cameraModel){
 
@@ -74,15 +81,20 @@ void Camera::parseCameraSpecs(const string& cameraModel){
   getline(cmraModel, line);
   dist_stream << line;
   dist_stream >> dist_header >> dist;
+  // have to NEGATE the d, because we are looking DOWN the negative z axis:
+  dist = -dist;
   if(DEBUG) cout << "The distance away from the image plane is: " << dist << "\n" <<  endl;
 
   // grab the bounds:
-  vector< int > bounds(4);
+  vector< double > bounds(4);
   stringstream bounds_stream;
   getline(cmraModel, line);
   bounds_stream << line;
-  bounds_stream >> bounds_header >> bounds[0] >> bounds[1] >> bounds[2] >> bounds[3];
-  if(DEBUG) print_bounds( bounds );
+  bounds_stream >> bounds_header >> bounds[0] >> bounds[1] >> bounds[2] >> bounds[3];  
+  if(DEBUG){
+    print_bounds( bounds );
+    cout << "Bottom, left, top, right is: " << bottom << " " <<  left << " " <<  top << " " <<  right << endl;
+  }
 
   // grab the resolution:
   vector<int> resolution(2);
@@ -98,14 +110,16 @@ void Camera::parseCameraSpecs(const string& cameraModel){
 void Camera::tt_origin_orient(){
 
   // Build Camera system origin and axes in world coordinates:
-
-  Vector3d eye = EYE;
+  
+  // FOUND OUT THAT i DON'T NEED THE EYE TRANSLATION MATRIX!
+  /*Vector3d eye = EYE;
   eye = -eye;
   if(DEBUG) cout << eye << endl;
 
   eye_translation.resize(4,4);
   eye_translation << 1,0,0,eye.x, 0,1,0,eye.y, 0,0,1,eye.z, 0,0,0,1;
   if(DEBUG) cout << "eye_translation matrix = \n" << eye_translation << endl;
+  */
 
 
   /*
@@ -116,15 +130,11 @@ void Camera::tt_origin_orient(){
     So W axis of RM is going to be defined as: W = E-L/||E-L|| <-- make it unit length
   */
   Vector3d Wt = (EYE-LOOKAP);
-  double mag = Wt.magnitude();
-  if(DEBUG) cout << "The mag is: " << mag << endl;
-  Vector3d W = Wt/mag;
+  Vector3d W = Wt/Wt.magnitude();
   if(DEBUG) cout << "W unit vector is: " << W << endl;
   /* The U axis (horizontal axis) is perpendicular to a plane defined by UPV and W */
   Vector3d Ut = crossProduct(UPV, W);
-  double mag2 = crossProduct(UPV, W).magnitude();
-  if(DEBUG) cout << "The mag2 is:" << mag2 << endl;
-  Vector3d U = Ut/mag2;
+  Vector3d U = Ut/crossProduct(UPV, W).magnitude();;
   if(DEBUG) cout << "U unit vector is: " << U << endl;
   /*
     Given the first two axis, the third is:
@@ -134,55 +144,25 @@ void Camera::tt_origin_orient(){
   if(DEBUG) cout << "The V unit vector is: " << V << endl;
 
   // Setting up rotation Matrix:
-  RMt.resize(4,4);
-  RMt << U.x,U.y,U.z,0, V.x,V.y,V.z,0, W.x,W.y,W.z,0, 0,0,0,1;
+  RM.resize(4,4);
+  RM << U.x,U.y,U.z,0, V.x,V.y,V.z,0, W.x,W.y,W.z,0, 0,0,0,1;
   if(DEBUG){
-    cout << "The RMt is = \n" << RMt << endl;
+    cout << "The RM is = \n" << RM << endl;
     Matrix4d test(4,4);
-    test = RMt.transpose() * RMt;
+    test = RM.transpose() * RM;
     cout << "Really rotation matrix?\n" << test << endl;
   }
 
-
-  RM.resize(4,4);
-  RM = RMt*eye_translation;
-  cout << "Final Matrix is: \n" << RM << endl;
+  if(DEBUG) cout << "Rotation Matrix is: \n" << RM << endl;
 
 }
 
 
-void Camera::translate_coordinates(const ModelObject& model){
 
-  modelVertexList = model.get_main_vertex_list();
-
-  int rows = model.get_verticies();
-
-  // This is a 3 X cols matrix using Eigen:
-  homog_matrix.resize(rows, 3);
-  
-  for (int i = 0; i < static_cast<int>(modelVertexList.size() ); i++){
-    for (int c = 0; c < static_cast<int>(modelVertexList[i].size() ); c++){
-      homog_matrix(i,c) = modelVertexList[i][c];
-    }
-  }
-
-  VectorXd vec(rows);
-  for(int i = 0; i < rows; i++){
-    vec(i) = 1;
-  }
-
-  homog_matrix.conservativeResize( homog_matrix.rows(), homog_matrix.cols()+1 );
-  homog_matrix.col(homog_matrix.cols() -1 ) = vec;
-  
-  // cout << "\n" << homog_matrix.transpose() << endl;
-
-  // cout << "\n Multiplying the two I get...\n" << RM*homog_matrix.transpose() << endl;
-
-}
 
 // ==================HELPER FUNCTIONS=========================
 
-void print_bounds(const vector<int>& bp){
+void print_bounds(const vector<double>& bp){
   for(int i = 0; i < static_cast<int>( bp.size() ); i++){
     cout << "bounds[" << i << "]:" << bp[i] << endl;
   }

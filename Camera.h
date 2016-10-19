@@ -13,7 +13,6 @@
 #include "ModelObject.h"
 
 using Eigen::Matrix4d;
-using Eigen::MatrixXd;
 
 class Camera{
 
@@ -45,19 +44,15 @@ class Camera{
   Vector3d LOOKAP;
   Vector3d UPV;
 
-  int dist;
-  std::vector< int > bounds;
+  double dist;
+  std::vector< double > bounds;
   std::vector< int > resolution;
   std::vector< std::vector< double > > modelVertexList;
   
   // translation matrix for eye
   Matrix4d eye_translation;
-  Matrix4d RMt;
   Matrix4d RM;
   
-  MatrixXd homog_matrix;
-
-
 };
 
 #endif // CAMERA_H_INCLUDE
