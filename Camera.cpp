@@ -28,13 +28,17 @@ void print_bounds(const vector< double >& pb);
 // Macros:
 #define DEBUG true
 
+// Bounds:
 #define bottom bounds[0]
 #define left   bounds[1]
 #define top    bounds[2]
 #define right  bounds[3]
 // Number of pixels horizontal and vertical
-#define width  res[0]
-#define height res[1]
+#define width  resolution[0]
+#define height resolution[1]
+// near clipping plan:
+#define near dist
+
 
 void Camera::parseCameraSpecs(const string& cameraModel){
 
@@ -102,12 +106,15 @@ void Camera::parseCameraSpecs(const string& cameraModel){
   getline(cmraModel, line);
   res_stream << line;
   res_stream >> res_header >> resolution[0] >> resolution[1];
-  if(DEBUG) print_res( resolution );
+  if(DEBUG){
+    print_res( resolution );
+    cout << "width and height is: " << width << " " <<  " " << height << endl;
+  }
 
 }
 
 
-void Camera::tt_origin_orient(){
+void Camera::buildRM(){
 
   // Build Camera system origin and axes in world coordinates:
   
@@ -130,22 +137,22 @@ void Camera::tt_origin_orient(){
     So W axis of RM is going to be defined as: W = E-L/||E-L|| <-- make it unit length
   */
   Vector3d Wt = (EYE-LOOKAP);
-  Vector3d W = Wt/Wt.magnitude();
-  if(DEBUG) cout << "W unit vector is: " << W << endl;
+  Vector3d WV = Wt/Wt.magnitude();
+  if(DEBUG) cout << "W unit vector is: " << WV << endl;
   /* The U axis (horizontal axis) is perpendicular to a plane defined by UPV and W */
-  Vector3d Ut = crossProduct(UPV, W);
-  Vector3d U = Ut/crossProduct(UPV, W).magnitude();;
-  if(DEBUG) cout << "U unit vector is: " << U << endl;
+  Vector3d Ut = crossProduct(UPV, WV);
+  Vector3d UV = Ut/crossProduct(UPV, WV).magnitude();;
+  if(DEBUG) cout << "U unit vector is: " << UV << endl;
   /*
     Given the first two axis, the third is:
     V = W X U
   */
-  Vector3d V = crossProduct(W,U);
-  if(DEBUG) cout << "The V unit vector is: " << V << endl;
+  Vector3d VV = crossProduct(WV,UV);
+  if(DEBUG) cout << "The V unit vector is: " << VV << endl;
 
   // Setting up rotation Matrix:
   RM.resize(4,4);
-  RM << U.x,U.y,U.z,0, V.x,V.y,V.z,0, W.x,W.y,W.z,0, 0,0,0,1;
+  RM << UV.x,UV.y,UV.z,0, VV.x,VV.y,VV.z,0, WV.x,WV.y,WV.z,0, 0,0,0,1;
   if(DEBUG){
     cout << "The RM is = \n" << RM << endl;
     Matrix4d test(4,4);
@@ -158,6 +165,26 @@ void Camera::tt_origin_orient(){
 }
 
 
+void Camera::definePixelPt(){
+
+  // Creating the Pixel's (3D points) that exist on the image plane:
+  for(int i = 0; i < width; i++){
+    for(int j = 0; j < height; j++){
+
+      double px = i/(width-1) * (right-left) + left;
+      cout <<"px is: " << px << endl;
+      double py = j/(height-1) * (top-bottom) + bottom;
+      cout <<"py is: " << py << endl;
+
+      // Creating th pixel --> in world coordinates:
+      // Awesome stuff man, vector + vector + vector + vector == point in the world.
+      Vector3d pixelPoint = EYE + (near * WV) + (px * UV) + (py * VV);
+      cout << "The pixel Point (3D point) in the world is: " << pixelPoint << endl;
+
+    }
+  }
+  
+}
 
 
 // ==================HELPER FUNCTIONS=========================

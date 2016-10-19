@@ -21,10 +21,12 @@ class Camera{
   Camera(){};
   // member functions:
   void parseCameraSpecs(const std::string& cameraModel);
-  void tt_origin_orient();
-  void translate_coordinates( const ModelObject& model);
+  void buildRM();
+  void definePixelPt();
+  // Accessor:
   Matrix4d get_RM() const;
-
+  
+  
   // class instance variables:
  private:
   // location of the focal point
@@ -40,9 +42,15 @@ class Camera{
   // res
   std::string res_header;
 
+  // Camera specs:
   Vector3d EYE; // <-- class that I wrote
   Vector3d LOOKAP;
   Vector3d UPV;
+
+  // RM basis vectors:
+  Vector3d WV;
+  Vector3d UV;
+  Vector3d VV;
 
   double dist;
   std::vector< double > bounds;

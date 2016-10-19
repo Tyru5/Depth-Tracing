@@ -120,7 +120,7 @@ inline Vector3d crossProduct(const Vector3d& a, const Vector3d& b){
 		  (a.x*b.y) - (a.y*b.x) );
 }
 
-inline Vector3d operator * (double factor, const Vector3d& a){
+inline Vector3d operator * (const double factor, const Vector3d& a){
   return Vector3d( factor *a.x, factor*a.y, factor*a.z );
 }
 

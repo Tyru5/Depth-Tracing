@@ -32,11 +32,11 @@ int main(int argc, char *argv[]){
   // Parse the Camera Model:
   cmra.parseCameraSpecs( argv[1] );
   // Build Camera system origin and axes in world coordinates:
-  cmra.tt_origin_orient();
+  cmra.buildRM();
 
   // Parse the .ply file:
   ply.readPlyFile(argv[2], obj1);
-  
+  cmra.definePixelPt();
 
   return 0;
 }
