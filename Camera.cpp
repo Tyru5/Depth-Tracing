@@ -28,18 +28,6 @@ void print_bounds(const vector< double >& pb);
 // Macros:
 #define DEBUG true
 
-// Bounds:
-#define bottom bounds[0]
-#define left   bounds[1]
-#define top    bounds[2]
-#define right  bounds[3]
-// Number of pixels horizontal and vertical
-#define width  resolution[0]
-#define height resolution[1]
-// near clipping plan:
-#define near dist
-
-
 void Camera::parseCameraSpecs(const string& cameraModel){
 
   string line;
@@ -95,6 +83,10 @@ void Camera::parseCameraSpecs(const string& cameraModel){
   getline(cmraModel, line);
   bounds_stream << line;
   bounds_stream >> bounds_header >> bounds[0] >> bounds[1] >> bounds[2] >> bounds[3];  
+  bottom = bounds[0];
+  left = bounds[1];
+  top = bounds[2];
+  right = bounds[3];
   if(DEBUG){
     print_bounds( bounds );
     cout << "Bottom, left, top, right is: " << bottom << " " <<  left << " " <<  top << " " <<  right << endl;
@@ -106,6 +98,8 @@ void Camera::parseCameraSpecs(const string& cameraModel){
   getline(cmraModel, line);
   res_stream << line;
   res_stream >> res_header >> resolution[0] >> resolution[1];
+  width = resolution[0];
+  height = resolution[1];
   if(DEBUG){
     print_res( resolution );
     cout << "width and height is: " << width << " " <<  " " << height << endl;
@@ -178,7 +172,7 @@ void Camera::definePixelPt(){
 
       // Creating th pixel --> in world coordinates:
       // Awesome stuff man, vector + vector + vector + vector == point in the world.
-      Vector3d pixelPoint = EYE + (near * WV) + (px * UV) + (py * VV);
+      Vector3d pixelPoint = EYE + (dist * WV) + (px * UV) + (py * VV);
       cout << "The pixel Point (3D point) in the world is: " << pixelPoint << endl;
 
     }

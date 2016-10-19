@@ -53,9 +53,16 @@ class Camera{
   Vector3d VV;
 
   double dist;
+
   std::vector< double > bounds;
+  double bottom;
+  double left;
+  double top;
+  double right;
+
   std::vector< int > resolution;
-  std::vector< std::vector< double > > modelVertexList;
+  int width;
+  int height;
   
   // translation matrix for eye
   Matrix4d eye_translation;
