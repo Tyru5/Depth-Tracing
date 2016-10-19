@@ -13,6 +13,7 @@
 #include "ModelObject.h"
 
 using Eigen::Matrix4d;
+using Eigen::MatrixXd;
 
 class Camera{
 
@@ -23,7 +24,7 @@ class Camera{
   void parseCameraSpecs(const std::string& cameraModel);
   void tt_origin_orient();
   void translate_coordinates( const ModelObject& model);
-
+  Matrix4d get_RM() const;
 
   // class instance variables:
  private:
@@ -47,11 +48,14 @@ class Camera{
   int dist;
   std::vector< int > bounds;
   std::vector< int > resolution;
-
+  std::vector< std::vector< double > > modelVertexList;
+  
   // translation matrix for eye
   Matrix4d eye_translation;
   Matrix4d RMt;
   Matrix4d RM;
+  
+  MatrixXd homog_matrix;
 
 
 };

@@ -29,7 +29,7 @@ class ModelObject{
   std::vector<double> get_xes();
   std::vector<double> get_whys();
   std::vector<double> get_zeezs();
-  std::vector< std::vector<double> > get_main_vertex_list();
+  std::vector< std::vector<double> > get_main_vertex_list() const;
   // =======================
   void set_vertex_list(const std::vector< std::vector<double> >& val);
   void set_faces_list(const std::vector<int>& val);

@@ -213,6 +213,6 @@ double ModelObject::std_dev(vector<double> list){
   return sqrt(res);
 }
 
-vector< vector<double> > ModelObject:: get_main_vertex_list(){
+vector< vector<double> > ModelObject:: get_main_vertex_list() const{
   return vertex_list;
 }

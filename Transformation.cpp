@@ -10,15 +10,12 @@
 #include <vector>
 #include <fstream> // Stream class to both read and write from/to files.
 #include <sstream>
-#include <Eigen/Dense>
 #include "Transformation.h"
 #include "PlyImage.h"
 #include "ModelObject.h"
 
-
 // namespace
 using namespace std;
-using Eigen::MatrixXd;
 
 // function prototypes:
 void center_title();
@@ -173,28 +170,6 @@ void Transformation::rounding(ModelObject& obj){
 
   print_std_dv(final_trans_std_x, final_trans_std_y, final_trans_std_z);
 
-}
-
-void Transformation::homog_crd(ModelObject& obj){
-
-  MdObj_vert_list = obj.get_main_vertex_list();
-
-  printMdObj_vertex_list();
-  
-  int cols = obj.get_verticies();
-  // cout << "The cols = " << cols << endl;
-
-  // This is a 4 X cols matrix using Eigen:
-  homog_matrix.resize(4,cols);
-
-  for (int i = 0; i < static_cast<int>(MdObj_vert_list.size() ); i++){
-    for (int c = 0; c < static_cast<int>(MdObj_vert_list[i].size() ); c++){
-      // cout <<  MdObj_vert_list[i][c] << endl;
-      // homog_matrix(i,c) = MdObj_vert_list[i][c];
-    }
-  }
-
-  
 }
 
 void center_title(){

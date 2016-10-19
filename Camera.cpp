@@ -19,13 +19,15 @@
 // namespace:
 using namespace std;
 using Eigen::Matrix4d;
+using Eigen::VectorXd;
+
 
 // function declarations:
 void print_res(const vector< int >& r);
 void print_bounds(const vector< int >& pb);
 
 // Macros:
-#define DEBUG false
+#define DEBUG true
 
 void Camera::parseCameraSpecs(const string& cameraModel){
 
@@ -151,7 +153,30 @@ void Camera::tt_origin_orient(){
 
 void Camera::translate_coordinates(const ModelObject& model){
 
+  modelVertexList = model.get_main_vertex_list();
+
+  int rows = model.get_verticies();
+
+  // This is a 3 X cols matrix using Eigen:
+  homog_matrix.resize(rows, 3);
   
+  for (int i = 0; i < static_cast<int>(modelVertexList.size() ); i++){
+    for (int c = 0; c < static_cast<int>(modelVertexList[i].size() ); c++){
+      homog_matrix(i,c) = modelVertexList[i][c];
+    }
+  }
+
+  VectorXd vec(rows);
+  for(int i = 0; i < rows; i++){
+    vec(i) = 1;
+  }
+
+  homog_matrix.conservativeResize( homog_matrix.rows(), homog_matrix.cols()+1 );
+  homog_matrix.col(homog_matrix.cols() -1 ) = vec;
+  
+  // cout << "\n" << homog_matrix.transpose() << endl;
+
+  // cout << "\n Multiplying the two I get...\n" << RM*homog_matrix.transpose() << endl;
 
 }
 
@@ -168,4 +193,8 @@ void print_res(const vector<int>& r){
   for(int i = 0; i < static_cast<int>( r.size() ); i++){
     cout << "res[" << i << "]:" << r[i] << endl;
   }
+}
+
+Matrix4d Camera::get_RM() const{
+  return RM;
 }

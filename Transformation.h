@@ -8,11 +8,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <Eigen/Dense>
 #include "PlyImage.h"
 #include "ModelObject.h"
-
-using Eigen::MatrixXd;
 
 class Transformation{
 
@@ -25,12 +22,10 @@ class Transformation{
   void printMdObj_vertex_list() const;
   void translate_origin(ModelObject& obj, const double& tx, const double& ty, const double& tz);
   void normalize_data(ModelObject& obj, const double& stdx, const double& stdy, const double& stdz);
-  void homog_crd(ModelObject& obj);
 
   // class instance variables:
  private:
   std::vector< std::vector<double> > MdObj_vert_list;
-  MatrixXd homog_matrix;
 
 };
 
