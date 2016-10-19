@@ -61,8 +61,8 @@ class Camera{
   double right;
 
   std::vector< int > resolution;
-  int width;
-  int height;
+  double width; // had to change this to double to have correct division
+  double height;
   
   // translation matrix for eye
   Matrix4d eye_translation;

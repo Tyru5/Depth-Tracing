@@ -35,7 +35,7 @@ int main(int argc, char *argv[]){
   cmra.buildRM();
 
   // Parse the .ply file:
-  ply.readPlyFile(argv[2], obj1);
+  // ply.readPlyFile(argv[2], obj1);
   cmra.definePixelPt();
 
   return 0;

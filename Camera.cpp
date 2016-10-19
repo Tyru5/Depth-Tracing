@@ -131,17 +131,17 @@ void Camera::buildRM(){
     So W axis of RM is going to be defined as: W = E-L/||E-L|| <-- make it unit length
   */
   Vector3d Wt = (EYE-LOOKAP);
-  Vector3d WV = Wt/Wt.magnitude();
+  WV = Wt/Wt.magnitude();
   if(DEBUG) cout << "W unit vector is: " << WV << endl;
   /* The U axis (horizontal axis) is perpendicular to a plane defined by UPV and W */
   Vector3d Ut = crossProduct(UPV, WV);
-  Vector3d UV = Ut/crossProduct(UPV, WV).magnitude();;
+  UV = Ut/crossProduct(UPV, WV).magnitude();;
   if(DEBUG) cout << "U unit vector is: " << UV << endl;
   /*
     Given the first two axis, the third is:
     V = W X U
   */
-  Vector3d VV = crossProduct(WV,UV);
+  VV = crossProduct(WV,UV);
   if(DEBUG) cout << "The V unit vector is: " << VV << endl;
 
   // Setting up rotation Matrix:
@@ -165,19 +165,19 @@ void Camera::definePixelPt(){
   for(int i = 0; i < width; i++){
     for(int j = 0; j < height; j++){
 
-      double px = i/(width-1) * (right-left) + left;
-      cout <<"px is: " << px << endl;
+      if(DEBUG) cout << "\ni,j" <<" " << i << "," << j <<  endl;
+      double px = i/(width-1)  * (right-left) + left;
       double py = j/(height-1) * (top-bottom) + bottom;
-      cout <<"py is: " << py << endl;
+      if(DEBUG) cout <<"px,py" << " " << px << "," << py << endl;
 
       // Creating th pixel --> in world coordinates:
       // Awesome stuff man, vector + vector + vector + vector == point in the world.
       Vector3d pixelPoint = EYE + (dist * WV) + (px * UV) + (py * VV);
-      cout << "The pixel Point (3D point) in the world is: " << pixelPoint << endl;
+      if(DEBUG) cout << "The pixel Point (3D point) in the world is: " << pixelPoint;
 
     }
   }
-  
+
 }
 
 
