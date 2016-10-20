@@ -22,7 +22,7 @@ int remove_comments(const string &current_line);
 int get_properties(const string &current_line);
 void print_comments(const vector<string> &comments);
 void print_properties(const vector<string> &properties);
-void print_data(const vector< vector<double> > &vect);
+void print_data(const vector< vector<int> > &vect);
 
 // Macros:
 #define DEBUG false
@@ -181,17 +181,37 @@ void PlyImage::readData(ifstream& istr, ModelObject& obj){
        ostreambuf_iterator<char>(sout));
 
   all_faces = sout.str();
+  // cout << all_faces << endl;
 
+  // another way I wanted to read in the triangle faces:
+  string col = all_faces.substr(0,2);
+  int face_cols = atoi( col.c_str() );
+  face_cols += 1;
+  // cout << face_cols << endl;
 
-  int number;
+  int face_rows = obj.get_faces();
+  list_faces = vector< vector<int> >(face_rows, vector<int>(face_cols) ); // four for triangles.
+  for(int i = 0; i < face_rows; i++){
+    for(int j = 0; j < face_cols; j++){
+      if( !(sout >> list_faces[i][j]) ){
+      	// cout << "Failed read when reading in the list of verticies" << endl;
+      }
+    }
+  }
+  
+  // print_data(list_faces);
+  
+  /*
+  int face_number;
   int faces_counter = 0;
-  while( sout >> number){
+  while( sout >> face_number){
     // cout << number << endl;
-    list_faces.push_back(number);
+    list_faces.push_back(face_number);
     faces_counter++;
   }
 
-  // cout << "size of counter = " << faces_counter << endl;
+  cout << "size of counter = " << faces_counter << endl;
+  */
 
 }
 
@@ -274,7 +294,7 @@ void print_properties(const vector<string> &container_of_properties){
   cout << "==============================" << endl;
 }
 
-void print_data(const vector<vector<double> > &vect){
+void print_data(const vector<vector<int> > &vect){
 
   for (int i = 0; i < static_cast<int>(vect.size() ); i++){
     for (int j = 0; j < static_cast<int>(vect[i].size() ); j++){

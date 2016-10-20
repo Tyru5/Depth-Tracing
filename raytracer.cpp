@@ -35,9 +35,13 @@ int main(int argc, char *argv[]){
   cmra.buildRM();
 
   // Parse the .ply file:
-  // ply.readPlyFile(argv[2], obj1);
+  ply.readPlyFile(argv[2], obj1);
+  
+  // Defined pixel's on image plane:
   cmra.definePixelPt();
+  cmra.defineRays();
 
+  
   return 0;
 }
 

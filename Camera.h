@@ -23,6 +23,8 @@ class Camera{
   void parseCameraSpecs(const std::string& cameraModel);
   void buildRM();
   void definePixelPt();
+  void defineRays();
+  
   // Accessor:
   Matrix4d get_RM() const;
   
@@ -64,9 +66,14 @@ class Camera{
   double width; // had to change this to double to have correct division
   double height;
   
-  // translation matrix for eye
+  // translation matrix for eye:
   Matrix4d eye_translation;
+  
+  // Rotation Matrix:
   Matrix4d RM;
+
+  // 2d array for holding all the pixel Points on the image plane:
+  std::vector< std::vector< Vector3d > > pointsOIM;
   
 };
 

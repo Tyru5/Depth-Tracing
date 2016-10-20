@@ -39,7 +39,7 @@ class PlyImage{
   int number_of_verticies;
   std::vector< std::vector<double> > list_verticies;
   int number_of_faces;
-  std::vector<int> list_faces;
+  std::vector< std::vector< int > > list_faces;
   std::string all_faces;
 
 

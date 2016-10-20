@@ -26,7 +26,7 @@ void print_res(const vector< int >& r);
 void print_bounds(const vector< double >& pb);
 
 // Macros:
-#define DEBUG true
+#define DEBUG false
 
 void Camera::parseCameraSpecs(const string& cameraModel){
 
@@ -161,23 +161,30 @@ void Camera::buildRM(){
 
 void Camera::definePixelPt(){
 
-  // Creating the Pixel's (3D points) that exist on the image plane:
+  pointsOIM = vector< vector< Vector3d > >(width, vector< Vector3d >(height) );
+  
+  /*
+    Code that creates a 3D point that represents a pixel on th image plane:
+   */
   for(int i = 0; i < width; i++){
     for(int j = 0; j < height; j++){
-
       if(DEBUG) cout << "\ni,j" <<" " << i << "," << j <<  endl;
       double px = i/(width-1)  * (right-left) + left;
       double py = j/(height-1) * (top-bottom) + bottom;
       if(DEBUG) cout <<"px,py" << " " << px << "," << py << endl;
-
       // Creating th pixel --> in world coordinates:
       // Awesome stuff man, vector + vector + vector + vector == point in the world.
       Vector3d pixelPoint = EYE + (dist * WV) + (px * UV) + (py * VV);
       if(DEBUG) cout << "The pixel Point (3D point) in the world is: " << pixelPoint;
-
+      pointsOIM[i][j] = pixelPoint;
     }
   }
+}
 
+void Camera::defineRays(){
+
+  
+  
 }
 
 
