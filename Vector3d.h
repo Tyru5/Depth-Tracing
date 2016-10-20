@@ -60,7 +60,7 @@ class Vector3d{
 
   const Vector3d unitVector() const{
     const double mag = magnitude();
-    cout << "The mag" << mag << endl;
+    // cout << "The mag" << mag << endl;
     return Vector3d(x/mag, y/mag, z/mag);
   }
 

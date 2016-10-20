@@ -39,6 +39,7 @@ int main(int argc, char *argv[]){
   
   // Defined pixel's on image plane:
   cmra.definePixelPt();
+  // Calculate Rays:
   cmra.defineRays();
 
   

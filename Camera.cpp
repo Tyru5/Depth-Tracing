@@ -14,7 +14,7 @@
 #include <Eigen/Dense>
 #include "Camera.h"
 #include "Vector3d.h"
-#include "ModelObject.h"
+#include "Ray.h"
 
 // namespace:
 using namespace std;
@@ -135,7 +135,7 @@ void Camera::buildRM(){
   if(DEBUG) cout << "W unit vector is: " << WV << endl;
   /* The U axis (horizontal axis) is perpendicular to a plane defined by UPV and W */
   Vector3d Ut = crossProduct(UPV, WV);
-  UV = Ut/crossProduct(UPV, WV).magnitude();;
+  UV = Ut/( crossProduct(UPV, WV).magnitude() );
   if(DEBUG) cout << "U unit vector is: " << UV << endl;
   /*
     Given the first two axis, the third is:
@@ -153,7 +153,7 @@ void Camera::buildRM(){
     test = RM.transpose() * RM;
     cout << "Really rotation matrix?\n" << test << endl;
   }
-
+  
   if(DEBUG) cout << "Rotation Matrix is: \n" << RM << endl;
 
 }
@@ -179,12 +179,24 @@ void Camera::definePixelPt(){
       pointsOIM[i][j] = pixelPoint;
     }
   }
+  
 }
 
 void Camera::defineRays(){
 
-  
-  
+  /*
+    Code that creates the rays. Get direction of each ray.
+   */
+  Rays = vector< vector< Ray > >(width, vector<Ray>(height) );
+  for(int i = 0; i < width; i++){
+    for(int c = 0; c < height; c++){
+      Vector3d rayd = pointsOIM[i][c] - EYE;
+      rayd = rayd.unitVector();
+      Rays[i][c] =  Ray( pointsOIM[i][c], rayd ); 
+      Rays[i][c].pprint();
+    }
+  }
+
 }
 
 

@@ -5,7 +5,6 @@
 
 // directives:
 #include "Vector3d.h"
-#include <iostream>
 
 void Vector3d::pprint(ostream& out) const{
   out << "\n[" << x <<"]\n"<<"["<<y<<"]\n"<<"["<<z<<"]"<<endl;

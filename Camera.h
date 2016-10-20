@@ -10,7 +10,7 @@
 #include <vector>
 #include <Eigen/Dense>
 #include "Vector3d.h"
-#include "ModelObject.h"
+#include "Ray.h"
 
 using Eigen::Matrix4d;
 
@@ -74,6 +74,9 @@ class Camera{
 
   // 2d array for holding all the pixel Points on the image plane:
   std::vector< std::vector< Vector3d > > pointsOIM;
+  // array of rays hey...
+  std::vector< std::vector< Ray > > Rays;
+
   
 };
 
