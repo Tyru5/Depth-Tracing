@@ -10,12 +10,14 @@
 #include <vector>
 #include <fstream> // Stream class to both read and write from/to files.
 #include <sstream>
+#include <Eigen/Dense>
 #include "Transformation.h"
 #include "PlyImage.h"
 #include "ModelObject.h"
 
 // namespace
 using namespace std;
+using Eigen::MatrixXd;
 
 // function prototypes:
 void center_title();
@@ -211,43 +213,37 @@ void print_std_dv(const double& x, const double& y, const double& z){
 }
 
 void Transformation:: printMdObj_vertex_list() const{
-  for (int i = 0; i < static_cast<int>(MdObj_vert_list.size() ); i++){
-    for (int j = 0; j < static_cast<int>(MdObj_vert_list[i].size() ); j++){
-      cout << MdObj_vert_list[i][j] << " ";
-    }
-    cout << endl;
-  }
-
+  cout << MdObj_vert_list << endl;
 }
 
 void Transformation::translate_origin(ModelObject& obj,const double& tx, const double& ty, const double& tz ){
   // now need to translate the model --> subtract the mean vertex from all the verticies:
-  for(int i = 0; i < static_cast<int>(obj.get_xes().size()); i++){
-    MdObj_vert_list[i][0] -= tx;
+  for(int i = 0; i < obj.get_xes().size(); i++){
+    MdObj_vert_list(i,0) -= tx;
   }
 
-  for(int i = 0; i < static_cast<int>(obj.get_whys().size()); i++){
-    MdObj_vert_list[i][1] -= ty;
+  for(int i = 0; i < obj.get_whys().size(); i++){
+    MdObj_vert_list(i,1) -= ty;
   }
 
-  for(int i = 0; i < static_cast<int>(obj.get_zeezs().size()); i++){
-    MdObj_vert_list[i][2] -= tz;
+  for(int i = 0; i < obj.get_zeezs().size(); i++){
+    MdObj_vert_list(i,2) -= tz;
   }
 
 }
 
 void Transformation::normalize_data(ModelObject& obj, const double & stdx, const double& stdy, const double& stdz){
 
-  for(int i = 0; i < static_cast<int>(obj.get_xes().size()); i++){
-    MdObj_vert_list[i][0] /= stdx;
+  for(int i = 0; i < obj.get_xes().size(); i++){
+    MdObj_vert_list(i,0) /= stdx;
   }
 
-  for(int i = 0; i < static_cast<int>(obj.get_whys().size()); i++){
-    MdObj_vert_list[i][1] /= stdy;
+  for(int i = 0; i < obj.get_whys().size(); i++){
+    MdObj_vert_list(i,1) /= stdy;
   }
 
-  for(int i = 0; i < static_cast<int>(obj.get_zeezs().size()); i++){
-    MdObj_vert_list[i][2] /= stdz;
+  for(int i = 0; i < obj.get_zeezs().size(); i++){
+    MdObj_vert_list(i,2) /= stdz;
   }
 
 

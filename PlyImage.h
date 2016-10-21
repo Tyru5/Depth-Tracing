@@ -9,6 +9,10 @@
 #include <string>
 #include <vector>
 #include "ModelObject.h"
+#include <Eigen/Dense>
+
+// namespace:
+using Eigen::MatrixXd;
 
 class PlyImage{
 
@@ -34,12 +38,17 @@ class PlyImage{
 
   int number_of_comments;
   std::vector<std::string> comment_vector;
+
   int number_of_properties;
   std::vector<std::string> properties_vector;
+
   int number_of_verticies;
-  std::vector< std::vector<double> > list_verticies;
+  MatrixXd vertices;
+  
+
   int number_of_faces;
-  std::vector< std::vector< int > > list_faces;
+  MatrixXd list_faces;
+
   std::string all_faces;
 
 

@@ -11,18 +11,21 @@
 #include <sstream>
 #include <algorithm> // std::remove
 #include <iterator> // for iterator
+#include <Eigen/Dense>
 #include "PlyImage.h"
 #include "ModelObject.h"
+#include "Face.h"
 
 // namespace
 using namespace std;
+using Eigen::MatrixXd;
+using Eigen::RowVectorXd;
 
 // functin declarations:
 int remove_comments(const string &current_line);
 int get_properties(const string &current_line);
 void print_comments(const vector<string> &comments);
 void print_properties(const vector<string> &properties);
-void print_data(const vector< vector<int> > &vect);
 
 // Macros:
 #define DEBUG false
@@ -154,27 +157,31 @@ void PlyImage::readPlyFile(const string& fileName, ModelObject &obj){
 void PlyImage::readData(ifstream& istr, ModelObject& obj){
 
   // reading in the verticies from the file:
-  int rows_verts = obj.get_verticies();
-  // initialize vecotr of vectors:
-  list_verticies = vector< vector<double> >(rows_verts, vector<double>(3) ); // for verticies will always be three cols.
+  int row_verts = obj.get_verticies();
+
+  // Initializing Matrix size:
+  vertices.resize(row_verts,3);
 
   // cout << "rows_verts = " << rows_verts << endl;
   // reading in the list of verticies:
-  for(int r = 0; r < rows_verts; r++){
+  for(int r = 0; r < row_verts; r++){
     for(int c = 0; c < 3; c++){
-      if( !(istr >> list_verticies[r][c]) ){
-      	// cout << "Failed read when reading in the list of verticies" << endl;
+      if( !(istr >> vertices(r,c)) ){
+	// cout << "Couldn't read in all the vertices! " << endl;
       }
     }
   }
 
+  cout << vertices << endl;
+
 
   // set ModelObject vertex list -->  VERY IMPORTANT:
-  obj.set_vertex_list(list_verticies);
+  obj.set_vertex_list( vertices );
 
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   // copying what's left in the ifstream into a stringstreamm:
+  /* OLD WAY
   stringstream sout;
   copy(istreambuf_iterator<char>(istr),
        istreambuf_iterator<char>(),
@@ -182,35 +189,46 @@ void PlyImage::readData(ifstream& istr, ModelObject& obj){
 
   all_faces = sout.str();
   // cout << all_faces << endl;
+  */
+  
+  int cols = obj.get_faces();
+  list_faces.resize(4,cols);
+  for(int i = 0; i < cols; i++){
+    for(int c = 0; c < 4; c++){
+      istr >> list_faces(c,i);
+    }
+  }
+  obj.set_faces_list( list_faces );  
+
+  /*while( getline(istr,line) ){
+    fn << line;
+    fn >> fnn;
+    RowVectorXd current_row( fnn );
+    for(int i = 0; i < fnn; i++){
+      fn >> index;
+      current_row(i) = index;
+    } // end for.
+    cout << current_row << endl;
+    // clearing stringstream:
+    fn.str( string() );
+    fn.clear();
+  } // end while.
+  */
 
   // another way I wanted to read in the triangle faces:
-  string col = all_faces.substr(0,2);
-  int face_cols = atoi( col.c_str() );
-  face_cols += 1;
-  // cout << face_cols << endl;
-
+  /*int face_cols = 4;
   int face_rows = obj.get_faces();
-  list_faces = vector< vector<int> >(face_rows, vector<int>(face_cols) ); // four for triangles.
-  for(int i = 0; i < face_rows; i++){
-    for(int j = 0; j < face_cols; j++){
-      if( !(sout >> list_faces[i][j]) ){
+  list_faces.resize(face_rows,face_cols);
+
+  for(int i = 0; i < list_faces.rows(); i++){
+    for(int j = 0; j < list_faces.cols(); j++){
+      if( !( sout >> list_faces(i,j) ) ){
       	// cout << "Failed read when reading in the list of verticies" << endl;
       }
     }
   }
-  
-  // print_data(list_faces);
-  
-  /*
-  int face_number;
-  int faces_counter = 0;
-  while( sout >> face_number){
-    // cout << number << endl;
-    list_faces.push_back(face_number);
-    faces_counter++;
-  }
 
-  cout << "size of counter = " << faces_counter << endl;
+  obj.set_faces_list( list_faces );
   */
 
 }
@@ -240,16 +258,16 @@ void PlyImage:: writePlyFile(ModelObject& obj, const string& fileName, const str
   }
   outfile << second_element_def << endl << properties_vector[properties_vector.size()-1] << endl << end_header << endl;
   // write the verticies:
-  vector< vector<double> > write_out = obj.get_main_vertex_list();
-  for(int i = 0; i < static_cast<int>(write_out.size()); i++){
-    for(int j = 0; j < static_cast<int>(write_out[i].size()); j++){ // should be three columns.
+  MatrixXd write_out = obj.get_main_vertex_list();
+  for(int i = 0; i < write_out.rows(); i++){
+    for(int j = 0; j < write_out.cols(); j++){ // should be three columns.
       if( j == 2 ){
-	outfile << write_out[i][j];
+	outfile << write_out(i,j);
       }else{
-	outfile << write_out[i][j] << " ";
+	outfile << write_out(i,j) << " ";
       }
     }
-    if( i != static_cast<int>(write_out.size() - 1) ){
+    if( i != (write_out.cols()-1) ){
       outfile << endl;
     }
   }
@@ -292,15 +310,4 @@ void print_properties(const vector<string> &container_of_properties){
     cout << container_of_properties[i] << endl;
   }
   cout << "==============================" << endl;
-}
-
-void print_data(const vector<vector<int> > &vect){
-
-  for (int i = 0; i < static_cast<int>(vect.size() ); i++){
-    for (int j = 0; j < static_cast<int>(vect[i].size() ); j++){
-      cout << vect[i][j] << " ";
-    }
-    cout << endl;
-  }
-
 }

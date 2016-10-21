@@ -8,8 +8,12 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <Eigen/Dense>
 #include "PlyImage.h"
 #include "ModelObject.h"
+
+// namespace:
+using Eigen::MatrixXd;
 
 class Transformation{
 
@@ -25,7 +29,7 @@ class Transformation{
 
   // class instance variables:
  private:
-  std::vector< std::vector<double> > MdObj_vert_list;
+  MatrixXd MdObj_vert_list;
 
 };
 
