@@ -8,10 +8,10 @@
 #include <iostream>
 #include <string>
 #include <Eigen/Dense>
+#include "Vector3d.h"
 
 using Eigen::Matrix3d;
 using Eigen::MatrixXd;
-using Eigen::Vector4d;
 
 // for overloading operator<<
 using std::cout;
@@ -21,27 +21,33 @@ class Face{
 
  public:
   // Default Constructor:
- Face(): colVect( Vector4d::Zero(4) ){};
- Face(const Vector4d& scolVect): colVect( scolVect ){};
+ Face(): A(0),B(0),C(0){};
+ Face(const double& sA, const double& sB, const double& sC): A(sA),B(sB),C(sC){};
 
 
   // Member functions:
-  void add_vertex_index();
+  void map(const MatrixXd& mat);
   void pprint(ostream& out = cout) const;
+  Vector3d getA() const;
   
   // copy assignment operator: 1 of the BIG THREE
   // This doesn't really make sense yet...
   const Face& operator= (const Face& rhs){
     if( this != &rhs ){ // Standard alias test...
-      colVect = rhs.colVect;
-      vertex_index_list = rhs.vertex_index_list;
+      A = rhs.A;
+      B = rhs.B;
+      C = rhs.C;
+      mvil = rhs.mvil;
     }
     return *this;
   }
 
- protected:
-  Vector4d colVect;
-  Matrix3d vertex_index_list;
+ public:
+  double A;
+  double B;
+  double C;
+
+  Matrix3d mvil;
 
 };
 

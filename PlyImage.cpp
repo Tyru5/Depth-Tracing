@@ -173,7 +173,7 @@ void PlyImage::readData(ifstream& istr, ModelObject& obj){
     }
   }
 
-  // cout << vertices << endl;
+  // cout << vertices << "\n" << endl;
 
 
   // set ModelObject vertex list -->  VERY IMPORTANT:
@@ -200,18 +200,21 @@ void PlyImage::readData(ifstream& istr, ModelObject& obj){
     }
   }
 
-  cout << list_faces << endl;
+  // cout << list_faces << endl;
   obj.set_faces_list( list_faces );
 
-  cout << list_faces.cols() << endl;
-  for(int j = 0; j < list_faces.cols(); j++){
-    Vector4d tmpface = list_faces.col(j);
+  // allocate space for Face vector:
+  Faces = vector< Face >( list_faces.cols() );
+  for(int i = 0; i < list_faces.cols(); i++){
+    Vector4d tmpface = list_faces.col(i);
     // cout << tmpface << endl;
-    Faces[j] = Face( tmpface );
-    Faces[j].add_vertex_index();
+    Faces[i] = Face( tmpface(1), tmpface(2), tmpface(3) );
+    Faces[i].map(vertices);
+    // Faces[i].pprint();
   }
 
-
+  
+  
   /*while( getline(istr,line) ){
     fn << line;
     fn >> fnn;

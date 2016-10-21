@@ -9,6 +9,7 @@
 #include <vector>
 #include <Eigen/Dense>
 #include "Face.h"
+#include "Vector3d.h"
 
 // namespace:
 using namespace std;
@@ -16,21 +17,23 @@ using Eigen::Matrix3d;
 using Eigen::MatrixXd;
 
 // Macros:
-#define DEBUG true
+#define DEBUG false
 
-void Face::add_vertex_index(){
-  
-  cout << colVect.transpose() << endl;
-  
-  
-  
+void Face::map(const MatrixXd& mat){
+
+  mvil.resize(3,3);
+
+  mvil.row(0) = mat.row(A);
+  mvil.row(1) = mat.row(B);
+  mvil.row(2) = mat.row(C);
+
 }
 
 void Face::pprint(ostream& out) const{
-  out << "FACE: " << endl;;
+  out << "FACE: " << endl;
   // print off vertex list:
-  out << "\nvertex list: " << endl;
-  out << vertex_index_list << endl;
+  out << "mapped vertex list: " << endl;
+  out << mvil << endl;
 }
 
 
@@ -39,3 +42,6 @@ ostream& operator<< (ostream& out, const Face& f){
   return out;
 }
 
+Vector3d Face::getA() const{
+  return mvil.col(0);
+}
