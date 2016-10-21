@@ -26,7 +26,7 @@ void print_res(const vector< int >& r);
 void print_bounds(const vector< double >& pb);
 
 // Macros:
-#define DEBUG false
+#define DEBUG true
 
 void Camera::parseCameraSpecs(const string& cameraModel){
 
@@ -193,7 +193,7 @@ void Camera::defineRays(){
       Vector3d rayd = pointsOIM[i][c] - EYE;
       rayd = rayd.unitVector();
       Rays[i][c] =  Ray( pointsOIM[i][c], rayd ); 
-      Rays[i][c].pprint();
+      if(DEBUG) Rays[i][c].pprint();
     }
   }
 

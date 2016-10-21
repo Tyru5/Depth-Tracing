@@ -10,6 +10,8 @@
 #include <Eigen/Dense>
 
 using Eigen::Matrix3d;
+using Eigen::MatrixXd;
+using Eigen::Vector4d;
 
 // for overloading operator<<
 using std::cout;
@@ -19,8 +21,8 @@ class Face{
 
  public:
   // Default Constructor:
- Face(): how_many_faces(0){};
- Face(const int& numFaces): how_many_faces( numFaces ){};
+ Face(): colVect( Vector4d::Zero(4) ){};
+ Face(const Vector4d& scolVect): colVect( scolVect ){};
 
 
   // Member functions:
@@ -31,16 +33,15 @@ class Face{
   // This doesn't really make sense yet...
   const Face& operator= (const Face& rhs){
     if( this != &rhs ){ // Standard alias test...
-      how_many_faces = rhs.how_many_faces;
+      colVect = rhs.colVect;
       vertex_index_list = rhs.vertex_index_list;
     }
     return *this;
   }
 
  protected:
-  int how_many_faces;
+  Vector4d colVect;
   Matrix3d vertex_index_list;
-  int counter;
 
 };
 

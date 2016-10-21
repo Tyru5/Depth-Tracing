@@ -19,7 +19,8 @@
 // namespace
 using namespace std;
 using Eigen::MatrixXd;
-using Eigen::RowVectorXd;
+// using Eigen::RowVectorXd;
+using Eigen::Vector4d;
 
 // functin declarations:
 int remove_comments(const string &current_line);
@@ -172,7 +173,7 @@ void PlyImage::readData(ifstream& istr, ModelObject& obj){
     }
   }
 
-  cout << vertices << endl;
+  // cout << vertices << endl;
 
 
   // set ModelObject vertex list -->  VERY IMPORTANT:
@@ -198,7 +199,18 @@ void PlyImage::readData(ifstream& istr, ModelObject& obj){
       istr >> list_faces(c,i);
     }
   }
-  obj.set_faces_list( list_faces );  
+
+  cout << list_faces << endl;
+  obj.set_faces_list( list_faces );
+
+  cout << list_faces.cols() << endl;
+  for(int j = 0; j < list_faces.cols(); j++){
+    Vector4d tmpface = list_faces.col(j);
+    // cout << tmpface << endl;
+    Faces[j] = Face( tmpface );
+    Faces[j].add_vertex_index();
+  }
+
 
   /*while( getline(istr,line) ){
     fn << line;

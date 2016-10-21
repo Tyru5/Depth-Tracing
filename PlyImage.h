@@ -10,6 +10,7 @@
 #include <vector>
 #include "ModelObject.h"
 #include <Eigen/Dense>
+#include "Face.h"
 
 // namespace:
 using Eigen::MatrixXd;
@@ -44,12 +45,13 @@ class PlyImage{
 
   int number_of_verticies;
   MatrixXd vertices;
-  
 
   int number_of_faces;
   MatrixXd list_faces;
 
   std::string all_faces;
+
+  std::vector< Face > Faces;
 
 
 };

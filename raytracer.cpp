@@ -30,17 +30,17 @@ int main(int argc, char *argv[]){
   ModelObject obj1;
 
   // Parse the Camera Model:
-  cmra.parseCameraSpecs( argv[1] );
+  // cmra.parseCameraSpecs( argv[1] );
   // Build Camera system origin and axes in world coordinates:
-  cmra.buildRM();
+  // cmra.buildRM();
 
   // Parse the .ply file:
   ply.readPlyFile(argv[2], obj1);
 
   // Defined pixel's on image plane:
-  cmra.definePixelPt();
+  // cmra.definePixelPt();
   // Calculate Rays:
-  cmra.defineRays();
+  // cmra.defineRays();
 
   
   return 0;

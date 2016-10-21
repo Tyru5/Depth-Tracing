@@ -13,23 +13,23 @@
 // namespace:
 using namespace std;
 using Eigen::Matrix3d;
+using Eigen::MatrixXd;
 
+// Macros:
+#define DEBUG true
 
-/*void Face::add_vertex_index(){
-
-  vertex_index_list.resize(3,3);
-  vertex_index_list(counter, 0)  =  // something
-  vertex_index_list(counter, 1)  =  // something
-  vertex_index_list(counter, 2)  =  // something
+void Face::add_vertex_index(){
   
-  counter++;
+  cout << colVect.transpose() << endl;
+  
+  
+  
 }
-*/
 
 void Face::pprint(ostream& out) const{
-  out << "FACE: " << counter;
+  out << "FACE: " << endl;;
   // print off vertex list:
-  out << "vertex list: " << endl;
+  out << "\nvertex list: " << endl;
   out << vertex_index_list << endl;
 }
 
