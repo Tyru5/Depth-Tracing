@@ -8,10 +8,10 @@
 #include <iostream>
 #include <string>
 #include <Eigen/Dense>
-#include "Vector3d.h"
 
 using Eigen::Matrix3d;
 using Eigen::MatrixXd;
+using Eigen::Vector3d;
 
 // for overloading operator<<
 using std::cout;

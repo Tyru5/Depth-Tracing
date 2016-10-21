@@ -213,7 +213,7 @@ void PlyImage::readData(ifstream& istr, ModelObject& obj){
     // Faces[i].pprint();
   }
 
-  
+  cout << Faces[0].getA() << endl;
   
   /*while( getline(istr,line) ){
     fn << line;

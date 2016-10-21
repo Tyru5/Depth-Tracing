@@ -9,12 +9,12 @@
 #include <vector>
 #include <Eigen/Dense>
 #include "Face.h"
-#include "Vector3d.h"
 
 // namespace:
 using namespace std;
 using Eigen::Matrix3d;
 using Eigen::MatrixXd;
+using Eigen::Vector3d;
 
 // Macros:
 #define DEBUG false
@@ -23,9 +23,9 @@ void Face::map(const MatrixXd& mat){
 
   mvil.resize(3,3);
 
-  mvil.row(0) = mat.row(A);
-  mvil.row(1) = mat.row(B);
-  mvil.row(2) = mat.row(C);
+  mvil.col(0) = mat.row(A).transpose();
+  mvil.col(1) = mat.row(B).transpose();
+  mvil.col(2) = mat.row(C).transpose();
 
 }
 
