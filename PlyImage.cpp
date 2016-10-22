@@ -34,7 +34,7 @@ void print_properties(const vector<string> &properties);
 #define PROPERTY_KEYWORD "property"
 #define END_HEADER "end_header"
 
-void PlyImage::readPlyFile(const string& fileName, ModelObject &obj){
+void PlyImage::readPlyFile(const string& fileName, ModelObject& obj, Face& faces){
 
   string line;
   ifstream infile(fileName);
@@ -151,11 +151,11 @@ void PlyImage::readPlyFile(const string& fileName, ModelObject &obj){
   // cout << "the line = " << line << endl;
 
   // start to read the data into the ModelObject obj:
-  readData(infile, obj);
+  readData(infile, obj, faces);
 
 }
 
-void PlyImage::readData(ifstream& istr, ModelObject& obj){
+void PlyImage::readData(ifstream& istr, ModelObject& obj, Face& faces){
 
   // reading in the verticies from the file:
   int row_verts = obj.get_verticies();
@@ -204,16 +204,16 @@ void PlyImage::readData(ifstream& istr, ModelObject& obj){
   obj.set_faces_list( list_faces );
 
   // allocate space for Face vector:
-  Faces = vector< Face >( list_faces.cols() );
+  F = vector< Face >( list_faces.cols() );
   for(int i = 0; i < list_faces.cols(); i++){
     Vector4d tmpface = list_faces.col(i);
     // cout << tmpface << endl;
-    Faces[i] = Face( tmpface(1), tmpface(2), tmpface(3) );
-    Faces[i].map(vertices);
-    // Faces[i].pprint();
+    F[i] = Face( tmpface(1), tmpface(2), tmpface(3) );
+    F[i].map(vertices);
+    faces.addFace(F[i]);
+    // if(DEBUG) F[i].pprint();
   }
 
-  cout << Faces[0].getA() << endl;
   
   /*while( getline(istr,line) ){
     fn << line;

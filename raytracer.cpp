@@ -11,7 +11,6 @@
 #include "PlyImage.h"
 #include "ModelObject.h"
 #include "Transformation.h"
-#include "Vector3d.h"
 
 using namespace std;
 
@@ -28,21 +27,23 @@ int main(int argc, char *argv[]){
   Camera cmra;
   PlyImage ply;
   ModelObject obj1;
-
+  Face faces;
+  
   // Parse the Camera Model:
-  // cmra.parseCameraSpecs( argv[1] );
+  cmra.parseCameraSpecs( argv[1] );
   // Build Camera system origin and axes in world coordinates:
-  // cmra.buildRM();
+  cmra.buildRM();
 
   // Parse the .ply file:
-  ply.readPlyFile(argv[2], obj1);
+  ply.readPlyFile(argv[2], obj1, faces);
 
   // Defined pixel's on image plane:
-  // cmra.definePixelPt();
-  // Calculate Rays:
-  // cmra.defineRays();
+  cmra.definePixelPt();
+  // Calculate Rays: THESE TWO CAN BE ONE FUNCTION! ALSO OPTIMZE THIS!
+  cmra.defineRays();
+  // Compute t => point of intersection or 'how far we have to travel down the ray to intersect with the plane'
+  cmra.rayTriangleIntersection(obj1,faces);
 
-  
   return 0;
 }
 

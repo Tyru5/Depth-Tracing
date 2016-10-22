@@ -4,7 +4,6 @@
 
 
 // directives:
-#include "Vector3d.h"
 #include "Ray.h"
 
 // namespace:
@@ -15,13 +14,11 @@ using namespace std;
 
 
 void Ray::pprint(ostream& out) const{
-  out << "Source: " << origin << endl;
-  out << "Direction:" << direction << endl;
+  out << "\nSource: \n" << origin << endl;
+  out << "\nDirection: \n" << direction << endl;
 }
 
 ostream& operator<< (ostream& out, const Ray& r){
   r.pprint( out );
   return out;
 }
-
-

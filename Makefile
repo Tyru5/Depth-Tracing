@@ -3,7 +3,7 @@
 # CS410 :: intro to graphics
 
 CXX		= g++
-OBJS		=  raytracer.o ModelObject.o PlyImage.o Transformation.o Camera.o Vector3d.o Ray.o Face.o
+OBJS		=  raytracer.o ModelObject.o PlyImage.o Transformation.o Camera.o Ray.o Face.o
 DEBUG		= -g
 CPPFLAGS	= -Wall -std=c++11 -I. -c $(DEBUG) # The only thing that you need to keep in mind when compiling the
 							      # above program is that the compiler must be able to find the Eigen header files.
@@ -18,7 +18,7 @@ raytracer: $(OBJS)
 	@echo "-- Success!"
 
 raytracer.o: raytracer.cpp
-	@echo "-- Compiling pa1 class..."
+	@echo "-- Compiling raytracer..."
 	$(CXX) $(CPPFLAGS) raytracer.cpp
 
 ModelObject.o: ModelObject.cpp ModelObject.h
@@ -37,10 +37,6 @@ Transformation.o: Transformation.cpp Transformation.h
 Camera.o: Camera.cpp Camera.h
 	@echo "-- Compiling Camera class..."
 	$(CXX) $(CPPFLAGS) Camera.cpp
-
-Vector3d.o: Vector3d.cpp Vector3d.h
-	@echo "-- Compiling Camera class..."
-	$(CXX) $(CPPFLAGS) Vector3d.cpp
 
 Ray.o: Ray.cpp Ray.h
 	@echo "-- Compiling Ray class..."

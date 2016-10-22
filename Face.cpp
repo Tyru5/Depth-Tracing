@@ -23,6 +23,9 @@ void Face::map(const MatrixXd& mat){
 
   mvil.resize(3,3);
 
+  // cout << "this is B " << B << endl;
+  // cout << "the B row in mat " << mat.row(B).transpose() << endl;
+  
   mvil.col(0) = mat.row(A).transpose();
   mvil.col(1) = mat.row(B).transpose();
   mvil.col(2) = mat.row(C).transpose();
@@ -44,4 +47,20 @@ ostream& operator<< (ostream& out, const Face& f){
 
 Vector3d Face::getA() const{
   return mvil.col(0);
+}
+
+Vector3d Face::getB() const{
+  return mvil.col(1);
+}
+
+Vector3d Face::getC() const{
+  return mvil.col(2);
+}
+
+void Face::addFace(const Face& f){
+  Faces.push_back(f);
+}
+
+Face Face::getFace(const int& index) const{
+  return Faces[index];
 }

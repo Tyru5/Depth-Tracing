@@ -5,15 +5,21 @@
 #define RAY_H_INCLUDE
 
 // directives:
-#include "Vector3d.h"
+#include <iostream>
+#include <Eigen/Dense>
+
+using std::cout;
+using std::ostream;
+using std::endl;
+using Eigen::Vector3d;
 
 class Ray{
 
  public:
   // Defualt Constructor:
  Ray(): origin( Vector3d() ), direction( Vector3d() ) {};
- Ray(const Vector3d& sorigin, const Vector3d& sdirection):
-  origin( sorigin ), direction( sdirection ) {};
+ Ray(const Vector3d& origin_, const Vector3d& direction_):
+  origin( origin_ ), direction( direction_ ) {};
 
   // pprint member function:
   void pprint(ostream& out = cout) const;
@@ -28,14 +34,13 @@ class Ray{
     return *this;
   }
 
- protected:
+ public:
   Vector3d origin;
   Vector3d direction;
 
-  
+
 };
 
 ostream& operator<< (ostream& out, const Ray& r);
 
 #endif // RAY_H_INCLUDE
-

@@ -9,26 +9,30 @@
 #include <string>
 #include <vector>
 #include <Eigen/Dense>
-#include "Vector3d.h"
+#include "ModelObject.h"
 #include "Ray.h"
+#include "Face.h"
 
 using Eigen::Matrix4d;
+using Eigen::Vector3d;
 
 class Camera{
 
  public:
   // constructor:
   Camera(){};
+
   // member functions:
   void parseCameraSpecs(const std::string& cameraModel);
+
   void buildRM();
   void definePixelPt();
   void defineRays();
-  
-  // Accessor:
-  Matrix4d get_RM() const;
-  
-  
+
+  // Where the magic happens:
+  int rayTriangleIntersection(const ModelObject& obj, const Face& faces);
+
+
   // class instance variables:
  private:
   // location of the focal point
@@ -65,19 +69,20 @@ class Camera{
   std::vector< int > resolution;
   double width; // had to change this to double to have correct division
   double height;
-  
+
   // translation matrix for eye:
   Matrix4d eye_translation;
-  
+
   // Rotation Matrix:
   Matrix4d RM;
 
   // 2d array for holding all the pixel Points on the image plane:
   std::vector< std::vector< Vector3d > > pointsOIM;
+
   // array of rays hey...
   std::vector< std::vector< Ray > > Rays;
 
-  
+
 };
 
 #endif // CAMERA_H_INCLUDE

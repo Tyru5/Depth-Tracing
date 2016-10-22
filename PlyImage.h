@@ -21,8 +21,8 @@ class PlyImage{
   // constructor:
   PlyImage(){};
   // member functions:
-  void readPlyFile(const std::string& fileName, ModelObject &obj);
-  void readData(std::ifstream &ifstr, ModelObject &obj);
+  void readPlyFile(const std::string& fileName, ModelObject &obj, Face& faces);
+  void readData(std::ifstream &ifstr, ModelObject &obj, Face& faces);
   void writePlyFile(ModelObject& obj, const std::string& fileName, const std::string& fileSuffix);
 
 
@@ -51,7 +51,8 @@ class PlyImage{
 
   std::string all_faces;
 
-  std::vector< Face > Faces;
+  // to hold all the Face objects:
+  std::vector< Face > F;
 
 
 };

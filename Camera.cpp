@@ -9,24 +9,28 @@
 #include <vector>
 #include <fstream> // Stream class to both read and write from/to files.
 #include <sstream>
-#include <algorithm> // std::remove
-#include <iterator> // for iterator
 #include <Eigen/Dense>
+#include <Eigen/Geometry> // for cross product of vectors.
 #include "Camera.h"
-#include "Vector3d.h"
 #include "Ray.h"
+#include "Face.h"
 
 // namespace:
 using namespace std;
+using Eigen::Matrix3d;
 using Eigen::Matrix4d;
-
+using Eigen::Vector3d;
 
 // function declarations:
 void print_res(const vector< int >& r);
 void print_bounds(const vector< double >& pb);
+Vector3d cramersRule(const Matrix3d& mat, const Vector3d& al);
+
 
 // Macros:
-#define DEBUG true
+#define DEBUG false
+#define EPSILON 0.00001
+
 
 void Camera::parseCameraSpecs(const string& cameraModel){
 
@@ -47,7 +51,7 @@ void Camera::parseCameraSpecs(const string& cameraModel){
   eye_stream >> eye_header >> x >> y >> z;
   Vector3d a(x,y,z);
   EYE = a;
-  if(DEBUG) cout << "The eye / focal point is at: " << EYE << endl;
+  if(DEBUG) cout << "The eye / focal point is at: \n" << EYE << endl;
 
   // grab lookap:
   stringstream lookap_stream;
@@ -56,7 +60,7 @@ void Camera::parseCameraSpecs(const string& cameraModel){
   lookap_stream >> look_header >> x >> y >> z;
   Vector3d b(x,y,z);
   LOOKAP = b;
-  if(DEBUG) cout << "The look at point is at: " << LOOKAP << endl;
+  if(DEBUG) cout << "The look at point is at: \n" << LOOKAP << endl;
 
 
   // grab UPV:
@@ -66,7 +70,7 @@ void Camera::parseCameraSpecs(const string& cameraModel){
   upv_stream >> supv >> x >> y >> z;
   Vector3d c(x,y,z);
   UPV = c;
-  if(DEBUG) cout << "The up vector is at: " << UPV << endl;
+  if(DEBUG) cout << "The up vector is at: \n" << UPV << endl;
 
   // grab distance away from image plane:
   stringstream dist_stream;
@@ -82,7 +86,7 @@ void Camera::parseCameraSpecs(const string& cameraModel){
   stringstream bounds_stream;
   getline(cmraModel, line);
   bounds_stream << line;
-  bounds_stream >> bounds_header >> bounds[0] >> bounds[1] >> bounds[2] >> bounds[3];  
+  bounds_stream >> bounds_header >> bounds[0] >> bounds[1] >> bounds[2] >> bounds[3];
   bottom = bounds[0];
   left = bounds[1];
   top = bounds[2];
@@ -111,17 +115,15 @@ void Camera::parseCameraSpecs(const string& cameraModel){
 void Camera::buildRM(){
 
   // Build Camera system origin and axes in world coordinates:
-  
+
   // FOUND OUT THAT i DON'T NEED THE EYE TRANSLATION MATRIX!
-  /*Vector3d eye = EYE;
+  Vector3d eye = EYE;
   eye = -eye;
   if(DEBUG) cout << eye << endl;
 
   eye_translation.resize(4,4);
-  eye_translation << 1,0,0,eye.x, 0,1,0,eye.y, 0,0,1,eye.z, 0,0,0,1;
+  eye_translation << 1,0,0,eye(0), 0,1,0,eye(1), 0,0,1,eye(2), 0,0,0,1;
   if(DEBUG) cout << "eye_translation matrix = \n" << eye_translation << endl;
-  */
-
 
   /*
     Going to use the process described in Lecture Week 5:
@@ -130,39 +132,39 @@ void Camera::buildRM(){
     Gaze direction is L-E (however we are going to do E-L)
     So W axis of RM is going to be defined as: W = E-L/||E-L|| <-- make it unit length
   */
-  Vector3d Wt = (EYE-LOOKAP);
-  WV = Wt/Wt.magnitude();
-  if(DEBUG) cout << "W unit vector is: " << WV << endl;
+
+  WV = (EYE-LOOKAP);
+  WV = WV/WV.norm();
+  if(DEBUG) cout << "W unit vector is: \n" << WV << endl;
   /* The U axis (horizontal axis) is perpendicular to a plane defined by UPV and W */
-  Vector3d Ut = crossProduct(UPV, WV);
-  UV = Ut/( crossProduct(UPV, WV).magnitude() );
-  if(DEBUG) cout << "U unit vector is: " << UV << endl;
+  UV = UPV.cross(WV);
+  UV = UV/UV.norm();
+  if(DEBUG) cout << "U unit vector is: \n" << UV << endl;
   /*
     Given the first two axis, the third is:
     V = W X U
   */
-  VV = crossProduct(WV,UV);
-  if(DEBUG) cout << "The V unit vector is: " << VV << endl;
+  VV = WV.cross(UV);
+  if(DEBUG) cout << "The V unit vector is: \n" << VV << endl;
 
   // Setting up rotation Matrix:
   RM.resize(4,4);
-  RM << UV.x,UV.y,UV.z,0, VV.x,VV.y,VV.z,0, WV.x,WV.y,WV.z,0, 0,0,0,1;
+  RM << UV(0),UV(1),UV(2),0, VV(0),VV(1),VV(2),0, WV(0),WV(1),WV(2),0, 0,0,0,1;
   if(DEBUG){
     cout << "The RM is = \n" << RM << endl;
     Matrix4d test(4,4);
     test = RM.transpose() * RM;
     cout << "Really rotation matrix?\n" << test << endl;
   }
-  
+
   if(DEBUG) cout << "Rotation Matrix is: \n" << RM << endl;
 
 }
 
-
 void Camera::definePixelPt(){
 
   pointsOIM = vector< vector< Vector3d > >(width, vector< Vector3d >(height) );
-  
+
   /*
     Code that creates a 3D point that represents a pixel on th image plane:
    */
@@ -175,11 +177,11 @@ void Camera::definePixelPt(){
       // Creating th pixel --> in world coordinates:
       // Awesome stuff man, vector + vector + vector + vector == point in the world.
       Vector3d pixelPoint = EYE + (dist * WV) + (px * UV) + (py * VV);
-      if(DEBUG) cout << "The pixel Point (3D point) in the world is: " << pixelPoint;
+      if(DEBUG) cout << "The pixel Point (3D point) in the world is: \n" << pixelPoint << endl;
       pointsOIM[i][j] = pixelPoint;
     }
   }
-  
+
 }
 
 void Camera::defineRays(){
@@ -191,12 +193,85 @@ void Camera::defineRays(){
   for(int i = 0; i < width; i++){
     for(int c = 0; c < height; c++){
       Vector3d rayd = pointsOIM[i][c] - EYE;
-      rayd = rayd.unitVector();
-      Rays[i][c] =  Ray( pointsOIM[i][c], rayd ); 
+      rayd = rayd/rayd.norm();
+      Rays[i][c] =  Ray( pointsOIM[i][c], rayd );
       if(DEBUG) Rays[i][c].pprint();
     }
   }
 
+}
+
+
+// Algorithm for Ray Triangle Intersection:
+int Camera::rayTriangleIntersection(const ModelObject& obj, const Face& faces){
+
+  /*
+    Ray/Triangle intersections are efficient
+    and can be computed directly in 3D
+    – No need for ray/plane intersection
+    • They rely on the following implicit
+    definition of a triangle:
+
+    - P = A + Beta(B-A) + Gamma(A-C)
+      Where: Beta >= 0, Gamma >= 0, Beta+Gamma <= 1
+
+      ~Using the Möller–Trumbore intersection algorithm~
+      - fast method for calculating the intersection of 
+      a ray and a triangle in three dimensions without needing 
+      precomputation of the plane equation of the plane containing the 
+      triangle. Among other uses, it can be used in computer graphics to 
+      implement ray tracing computations involving triangle meshes.
+  */
+
+  /*For each pixel, throw ray out of focal point
+    and calculate colour along ray;
+    Fill in pixel value;
+  */
+
+  double  Beta, Gamma, t;
+  int num_faces = obj.get_faces();
+  Vector3d AB,AC,AL;
+  Vector3d A,B,C;
+  Vector3d O,D;
+  Vector3d res;
+  
+  Matrix3d MTM(3,3);
+  
+  for(int i = 0; i < width; i++){
+    for(int c = 0; i < height; c++){
+
+      O = Rays[i][c].origin;
+      D = Rays[i][c].direction;
+      
+      for(int j = 0; j < num_faces; j++){
+	A = faces.getFace(j).getA();
+	B = faces.getFace(j).getB();
+	C = faces.getFace(j).getC();
+	
+	// Find vectors for two edges sharing the local point on the Triangle:
+	AB = A-B;
+	AC = A-C;
+	AL = A-O;
+	
+	MTM.col(0) = AB;
+	MTM.col(1) = AC;
+	MTM.col(2) = D;
+
+	if(DEBUG) cout << MTM << endl;
+
+	res = cramersRule(MTM, AL);
+
+	Beta = res(0);
+	Gamma = res(1);
+	t = res(2);
+	
+      }
+      
+    }
+  }
+  
+
+  return 0;
 }
 
 
@@ -215,6 +290,10 @@ void print_res(const vector<int>& r){
   }
 }
 
-Matrix4d Camera::get_RM() const{
-  return RM;
+Vector3d cramersRule(const Matrix3d& mat, const Vector3d& al){
+
+  // Do error checking in Cramer:
+
+  
+  
 }

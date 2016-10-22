@@ -22,13 +22,18 @@ class Face{
  public:
   // Default Constructor:
  Face(): A(0),B(0),C(0){};
- Face(const double& sA, const double& sB, const double& sC): A(sA),B(sB),C(sC){};
+ Face(const double& A_, const double& B_, const double& C_): A(A_),B(B_),C(C_){};
 
 
   // Member functions:
   void map(const MatrixXd& mat);
   void pprint(ostream& out = cout) const;
+  void addFace(const Face& f);
+  Face getFace(const int& index) const;
+  
   Vector3d getA() const;
+  Vector3d getB() const;
+  Vector3d getC() const;
   
   // copy assignment operator: 1 of the BIG THREE
   // This doesn't really make sense yet...
@@ -48,6 +53,8 @@ class Face{
   double C;
 
   Matrix3d mvil;
+
+  std::vector< Face > Faces;
 
 };
 
