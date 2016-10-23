@@ -30,9 +30,8 @@ class Camera{
   void defineRays();
 
   // Where the magic happens:
-  int rayTriangleIntersection(const ModelObject& obj, const Face& faces);
-
-
+  double rayTriangleIntersection(const ModelObject& obj, const Face& faces);
+  
   // class instance variables:
  private:
   // location of the focal point
@@ -82,6 +81,8 @@ class Camera{
   // array of rays hey...
   std::vector< std::vector< Ray > > Rays;
 
+  // t values:
+  std::vector< double > ts;
 
 };
 

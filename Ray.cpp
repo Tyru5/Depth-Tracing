@@ -5,9 +5,12 @@
 
 // directives:
 #include "Ray.h"
+#include <Eigen/Dense>
+
 
 // namespace:
 using namespace std;
+using Eigen:: Vector3d;
 
 // Macros:
 #define DEBUG false

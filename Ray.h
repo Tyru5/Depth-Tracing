@@ -23,7 +23,7 @@ class Ray{
 
   // pprint member function:
   void pprint(ostream& out = cout) const;
-
+  
 
  // copy assignment operator: 1 of the BIG THREE
   const Ray& operator= (const Ray& rhs){
