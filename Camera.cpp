@@ -10,6 +10,7 @@
 #include <fstream> // Stream class to both read and write from/to files.
 #include <sstream>
 #include <Eigen/Dense>
+#include <algorithm> // std::max
 #include <Eigen/Geometry> // for cross product of vectors.
 #include "Camera.h"
 #include "Ray.h"
@@ -20,12 +21,13 @@ using namespace std;
 using Eigen::Matrix3d;
 using Eigen::Matrix4d;
 using Eigen::Vector3d;
+using Eigen::Vector3i;
 
 // function declarations:
 void print_res(const vector< int >& r);
 void print_bounds(const vector< double >& pb);
 Vector3d cramersRule(const Matrix3d& mtm, const Vector3d& al);
-
+void print_ts( const vector<vector<double>>& vect);
 
 // Macros:
 #define DEBUG false
@@ -167,13 +169,11 @@ void Camera::definePixelPt(){
 
   /*
     Code that creates a 3D point that represents a pixel on th image plane:
-   */
+  */
   for(int i = 0; i < width; i++){
     for(int j = 0; j < height; j++){
-      if(DEBUG) cout << "\ni,j" <<" " << i << "," << j <<  endl;
       double px = i/(width-1)  * (right-left) + left;
       double py = j/(height-1) * (top-bottom) + bottom;
-      if(DEBUG) cout <<"px,py" << " " << px << "," << py << endl;
       // Creating th pixel --> in world coordinates:
       // Awesome stuff man, vector + vector + vector + vector == point in the world.
       Vector3d pixelPoint = EYE + (dist * WV) + (px * UV) + (py * VV);
@@ -188,7 +188,7 @@ void Camera::defineRays(){
 
   /*
     Code that creates the rays. Get direction of each ray.
-   */
+  */
   Rays = vector< vector< Ray > >(width, vector<Ray>(height) );
   for(int i = 0; i < width; i++){
     for(int c = 0; c < height; c++){
@@ -203,8 +203,7 @@ void Camera::defineRays(){
 
 
 // Algorithm for Ray Triangle Intersection:
-double Camera::rayTriangleIntersection(const ModelObject& obj, const Face& faces){
-
+bool Camera::rayTriangleIntersection(const Vector3d& origin, const Vector3d& dir, const Vector3d& v0, const Vector3d& v1, const Vector3d& v2, double* beta, double* gamma, double* t){
   /*
     Ray/Triangle intersections are efficient
     and can be computed directly in 3D
@@ -213,113 +212,185 @@ double Camera::rayTriangleIntersection(const ModelObject& obj, const Face& faces
     definition of a triangle:
 
     - P = A + Beta(B-A) + Gamma(A-C)
-      Where: Beta >= 0, Gamma >= 0, Beta+Gamma <= 1
+    Where: Beta >= 0, Gamma >= 0, Beta+Gamma <= 1
 
-      ~Using the Möller–Trumbore intersection algorithm~
-      - fast method for calculating the intersection of 
-      a ray and a triangle in three dimensions without needing 
-      precomputation of the plane equation of the plane containing the 
-      triangle. Among other uses, it can be used in computer graphics to 
-      implement ray tracing computations involving triangle meshes.
+    ~Using the Möller–Trumbore intersection algorithm~
+    - fast method for calculating the intersection of 
+    a ray and a triangle in three dimensions without needing 
+    precomputation of the plane equation of the plane containing the 
+    triangle. Among other uses, it can be used in computer graphics to 
+    implement ray tracing computations involving triangle meshes.
   */
+
+  /*
+  // ~Example test cases from SageMath~
+  Vector3d A(6,0,0);
+  Vector3d B(0,6,0);
+  Vector3d C(0,0,6);
+
+  Vector3d O(1,1,1);
+  Vector3d D(1,0,0);
+  D = D/D.norm();
+  
+  Vector3d e1 = B-A;
+  Vector3d e2 = C-A;
+  */
+
+  Vector3d Pvec,Qvec,Tvec;
+  double det, inv_det;
+
+  // Find vectors for two edges sharing V1 (which is A in my case):
+  Vector3d e1 = v1-v0;
+  Vector3d e2 = v2-v0;
+  
+  //Begin calculating determinant - also used to calculate Beta parameter
+  Pvec = dir.cross(e2);
+
+  //if determinant is near zero, ray lies in plane of triangle or ray is parallel to plane of triangle
+  det = e1.dot(Pvec);
+  if(det > -EPSILON && det < EPSILON) return false;
+
+  inv_det = 1.0/det;
+  
+  //calculate distance from V1 to ray origin:
+  Tvec = origin-v0;
+
+  //Calculate Beta parameter and test bound:
+  *beta = inv_det * ( Tvec.dot(Pvec) );
+  // cout << "beta = " << *beta << endl;
+  //The intersection lies outside of the triangle
+  if(*beta < 0.0 || *beta > 1.0) return false;
+
+  Qvec = Tvec.cross(e1);
+
+  //Calculate Gamma parameter and test bound
+  *gamma = inv_det * ( dir.dot(Qvec) );
+  // cout << "gamma = " << *gamma << endl;
+  
+  //The intersection lies outside of the triangle
+  if(*gamma < 0.0 || *beta + *gamma  > 1.0) return false;
+
+  *t = inv_det * ( e2.dot(Qvec) );
+  cout << " computed t: = " << *t << endl;
+
+  if(*t > EPSILON) { //ray intersection
+    // cout << "The Ray intersected the triangle!" << endl;
+    return true;
+  }
+
+
+  // didn't 'hit' triangle:
+  return false;
+}
+
+void Camera::computeDist(const ModelObject& obj, const Face& faces){
 
   /*For each pixel, throw ray out of focal point
     and calculate colour along ray;
     Fill in pixel value;
   */
 
-  double  Beta, Gamma, t;
-  int num_faces = obj.get_faces();
-  Vector3d AB,AC,AL;
-  Vector3d A,B,C;
-  Vector3d O,D;
-  Vector3d res;
-  
-  Matrix3d MTM(3,3);
+  // ~Example test cases from SageMath~
+  /*
+    Vector3d v0(6,0,0);
+    Vector3d v1(0,6,0);
+    Vector3d v2(0,0,6);
 
-  /* TESTING CRAMERS RULE:
-  Matrix3d testMTM(3,3);
-  Vector3d A(6,0,0);
-  Vector3d B(0,6,0);
-  Vector3d C(0,0,6);
-
-  Vector3d O(0,0,0);
-  Vector3d D(0,1,1);
-  D = D/D.norm();
-  
-  Vector3d AB = A-B;
-  Vector3d AC = A-C;
-
-  testMTM.col(0) = AB;
-  testMTM.col(1) = AC;
-  testMTM.col(2) = D;
-
-  Vector3d AL = A-O;
-  
-  Vector3d res;
-
-  res = cramersRule(testMTM, AL);
-  cout << res << endl;'
+    Vector3d O(1,1,1);
+    Vector3d D(1,0,0);
+    D = D/D.norm();
   */
+  
+  int num_faces = obj.get_faces();
+  cout << "num_faces = " << num_faces << endl;
+  
+  double beta;
+  double gamma;
+  double t;
+  
+  Vector3d O,D; // origin, direction
+  Vector3d v0,v1,v2; // face vertices
 
-  int counter = 0;
-  for(int i = 0; i < width; i++){
-    for(int c = 0; c < height; c++){ // <-- wow man.. just wow...
+  // allocate space for ts:
+  ts = vector< vector< double > >(width, vector<double>(height) );
 
+  for(int i = 0; i < width; i++){ // for each pixel on the image plane...
+    for(int c = 0; c < height; c++){
+      
       O = Rays[i][c].origin;
       // cout << "O = \n" << O << endl;
       D = Rays[i][c].direction;
       // cout << "D = \n" << D << endl;
-      D = D/D.norm();
       
-      for(int j = 0; j < num_faces; j++){
-	// cout << faces.getFace(j) << endl;
-      	A = faces.getFace(j).getA();
-      	B = faces.getFace(j).getB();
-      	C = faces.getFace(j).getC();
+      for(int j = 0; j < num_faces; j++){ // for each face in the .ply file...
+	v0 = faces.getFace(j).getA();
+	// cout << "v0 = \n" << v0 << endl;
+	v1 = faces.getFace(j).getB();
+	// cout << "v1 = \n" << v1 << endl;
+	v2 = faces.getFace(j).getC();
+	// cout << "v2 = \n" << v2 << endl;
 	
-      	// Find vectors for two edges sharing the local point on the Triangle:
-      	AB = A-B;
-      	AC = A-C;
-      	AL = A-O;
+	// Ray triangle intersection:
+	if( rayTriangleIntersection(O, D, v0, v1, v2, &beta, &gamma, &t) ){
+	  // cout << "computed t val = " << t << endl;
+	  // cout << "Beta: " << beta << endl;
+	  // cout << "Gamma: " << gamma << endl;
+	  ts[i][c] = t;
+	}else{
+	  // cout << "ray didn't intersect with triangle face!" << endl;
+	  ts[i][c] = 0;
+	}
 	
-      	MTM.col(0) = AB;
-      	MTM.col(1) = AC;
-      	MTM.col(2) = D;
+      }// end faces for loop.
 
-      	// cout << MTM << endl;
+    }// end inner for loop.
+  }// end outer for loop.
 
-      	res = cramersRule(MTM, AL);
+  // print_ts(ts);
 
-      	Beta = res(0);
-      	// cout << "Beta = " << Beta << endl;
-      	Gamma = res(1);
-      	// cout << "Gamma = " << Gamma << endl;
-      	t = res(2);
+}
 
-      	// Error checking:
-      	if(Beta < 0.0 || Beta > 1.0) {
-      	  // cout << "1Ray doesn't intersect triangle." << endl;
-      	  return 0;
-      	}else if (Gamma < 0.0 || Beta + Gamma > 1.0){
-      	  // cout << "2Ray doesn't intersect triangle." << endl;
-      	  return 0;
-      	}else if(t < EPSILON){
-      	  // cout << "3Ray doesn't intersect triangle." << endl;
-      	  return 0;
-      	}else{
-      	  // cout << "Ray intersects triangle!" << endl;
-      	  // cout << "computed t is = " << t << endl;
-      	  return t;
-      	}
-	
-      }// end of faces for loop.
+Vector3i Camera::getColour(const double& t){
 
-    }
-  } // end outer for.
-
+  if(t == 0){
+    return Vector3i(239,239,239);
+  }
   
-  return 0.0;
+  int ratio = 2 * (t - tmin) / (tmax - tmin);
+  int r = max(0, 255 * (1 - ratio));
+  int b = max(0, 255 * (ratio - 1)); 
+  int g = 255 - b - r;
+
+  Vector3i rgb(3);
+  rgb(0) = r;
+  rgb(1) = b;
+  rgb(2) = g;
+
+  return rgb;  
+}
+
+void Camera::writeImage(const string& out_file){
+
+  //STILL HAVE TO WORK ON THIS!
+  Vector3i rgbRes;
+  
+  ofstream out( out_file );
+  if( !out ) cout << "Sorry! Couldn't write out the file: " << out_file << endl;
+
+  // start writing out to the file:
+  out << "P3 " << endl;
+  out << width << " " << height << " 255" << endl;
+
+  // start writing out pixels:
+  for(int i = 0; i < width; i++){
+    for(int c = 0; c < height; c++){
+      rgbRes = getColour( ts[i][c] );
+      out << rgbRes(0) << " " << rgbRes(1) << " " << rgbRes(2) << endl;;
+    }
+  }
+
+  out.close();
+
 }
 
 
@@ -336,6 +407,17 @@ void print_res(const vector<int>& r){
   for(int i = 0; i < static_cast<int>( r.size() ); i++){
     cout << "res[" << i << "]:" << r[i] << endl;
   }
+}
+
+void print_ts( const vector<vector<double>>& vect){
+
+  for(int i = 0; i < static_cast<int>(vect.size()); i++){
+    for(int c = 0; c < static_cast<int>(vect[i].size()); c++){
+      cout << vect[i][c];
+    }
+    cout << endl;
+  }
+  
 }
 
 Vector3d cramersRule(const Matrix3d& mtm, const Vector3d& al){
