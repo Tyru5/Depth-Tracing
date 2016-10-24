@@ -27,7 +27,6 @@ using Eigen::Vector3i;
 void print_res(const vector< int >& r);
 void print_bounds(const vector< double >& pb);
 Vector3d cramersRule(const Matrix3d& mtm, const Vector3d& al);
-void print_ts( const vector<vector<double>>& vect);
 
 // Macros:
 #define DEBUG false
@@ -236,6 +235,13 @@ bool Camera::rayTriangleIntersection(const Vector3d& origin, const Vector3d& dir
   Vector3d e2 = C-A;
   */
 
+  cout << "In the raytriangleintersection --> O = \n" << origin << endl;
+  cout << "In the raytriangleintersection --> D = \n" << dir << endl;
+
+  cout << "In the raytriangleintersection --> v0 = \n" << v0 << endl;
+  cout << "In the raytriangleintersection --> v1 = \n" << v1 << endl;
+  cout << "In the raytriangleintersection --> v2 = \n" << v2 << endl;
+  
   Vector3d Pvec,Qvec,Tvec;
   double det, inv_det;
 
@@ -352,8 +358,6 @@ void Camera::computeDist(const ModelObject& obj, const Face& faces){
     }// end inner for loop.
   }// end outer for loop.
   
-  // print_ts(ts);
-  
 }
 
 Vector3i Camera::getColour(const double& t){
@@ -413,17 +417,6 @@ void print_res(const vector<int>& r){
   for(int i = 0; i < static_cast<int>( r.size() ); i++){
     cout << "res[" << i << "]:" << r[i] << endl;
   }
-}
-
-void print_ts( const vector<vector<double>>& vect){
-
-  for(int i = 0; i < static_cast<int>(vect.size()); i++){
-    for(int c = 0; c < static_cast<int>(vect[i].size()); c++){
-      cout << vect[i][c];
-    }
-    cout << endl;
-  }
-  
 }
 
 Vector3d cramersRule(const Matrix3d& mtm, const Vector3d& al){
