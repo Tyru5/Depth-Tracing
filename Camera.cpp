@@ -169,6 +169,7 @@ void Camera::definePixelPt(){
   /*
     Code that creates a 3D point that represents a pixel on th image plane:
   */
+  
   for(int i = 0; i < width; i++){
     for(int j = 0; j < height; j++){
       double px = i/(width-1)  * (right-left) + left;
@@ -202,7 +203,7 @@ void Camera::defineRays(){
 
 
 // Algorithm for Ray Triangle Intersection:
-bool Camera::rayTriangleIntersection(const Vector3d& origin, const Vector3d& dir, const Vector3d& v0, const Vector3d& v1, const Vector3d& v2, double* beta, double* gamma, double* t){
+bool Camera::rayTriangleIntersection(const Vector3d& origin, const Vector3d& dir, const Vector3d& v0, const Vector3d& v1, const Vector3d& v2, double* beta, double* gamma, double* t, int& counter){
   /*
     Ray/Triangle intersections are efficient
     and can be computed directly in 3D
@@ -235,13 +236,6 @@ bool Camera::rayTriangleIntersection(const Vector3d& origin, const Vector3d& dir
   Vector3d e2 = C-A;
   */
 
-  cout << "In the raytriangleintersection --> O = \n" << origin << endl;
-  cout << "In the raytriangleintersection --> D = \n" << dir << endl;
-
-  cout << "In the raytriangleintersection --> v0 = \n" << v0 << endl;
-  cout << "In the raytriangleintersection --> v1 = \n" << v1 << endl;
-  cout << "In the raytriangleintersection --> v2 = \n" << v2 << endl;
-  
   Vector3d Pvec,Qvec,Tvec;
   double det, inv_det;
 
@@ -279,14 +273,24 @@ bool Camera::rayTriangleIntersection(const Vector3d& origin, const Vector3d& dir
   if(*gamma < 0.0 || *beta + *gamma  > 1.0) return false;
 
   *t = inv_det * ( e2.dot(Qvec) );
-  cout << " computed t: = " << *t << endl;
+  // cout << " computed t: = " << *t << endl;
 
+  if( counter == 1){
+    tmin = *t;
+    tmax = *t;
+  }
+  
   if(*t > EPSILON) { //ray intersection
     // cout << "The Ray intersected the triangle!" << endl;
+
+    // settin tmin and tmax:
+    if(*t < tmin) tmin = *t;
+    if(*t > tmax) tmax = *t;
+    counter++;
     return true;
   }
 
-
+  
   // didn't 'hit' triangle:
   return false;
 }
@@ -326,13 +330,15 @@ void Camera::computeDist(const ModelObject& obj, const Face& faces){
   // allocate space for ts:
   ts = vector< vector< double > >(width, vector<double>(height) );
 
-  for(int i = 0; i < 1; i++){ // for each pixel on the image plane...
-    for(int c = 0; c < 1; c++){
+  int counter = 1;
+  
+  for(int i = 0; i < width; i++){ // for each pixel on the image plane...
+    for(int c = 0; c < height; c++){
       
       O = Rays[i][c].origin;
-      cout << "O = \n" << O << endl;
+      // cout << "O = \n" << O << endl;
       D = Rays[i][c].direction;
-      cout << "D = \n" << D << endl;
+      // cout << "D = \n" << D << endl;
       
       for(int j = 0; j < num_faces; j++){ // for each face in the .ply file...
 	v0 = faces.getFace(j).getA();
@@ -343,7 +349,7 @@ void Camera::computeDist(const ModelObject& obj, const Face& faces){
 	// cout << "v2 = \n" << v2 << endl;
 	
 	// Ray triangle intersection:
-	if( rayTriangleIntersection(O, D, v0, v1, v2, &beta, &gamma, &t) ){
+	if( rayTriangleIntersection(O, D, v0, v1, v2, &beta, &gamma, &t, counter) ){
 	  // cout << "computed t val = " << t << endl;
 	  // cout << "Beta: " << beta << endl;
 	  // cout << "Gamma: " << gamma << endl;
@@ -357,6 +363,8 @@ void Camera::computeDist(const ModelObject& obj, const Face& faces){
       
     }// end inner for loop.
   }// end outer for loop.
+
+  cout << "Depth t runs from " << tmin << " to " << tmax << endl;
   
 }
 
@@ -392,7 +400,7 @@ void Camera::writeImage(const string& out_file){
   out << width << " " << height << " 255" << endl;
 
   // start writing out pixels:
-  for(int i = 0; i < width; i++){
+  for(int i = 0; i < ( width*3); i++){
     for(int c = 0; c < height; c++){
       rgbRes = getColour( ts[i][c] );
       out << rgbRes(0) << " " << rgbRes(1) << " " << rgbRes(2) << endl;;

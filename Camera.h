@@ -32,7 +32,7 @@ class Camera{
 
   // Where the magic happens:
   void computeDist(const ModelObject& obj, const Face& faces);
-  bool rayTriangleIntersection(const Vector3d& origin, const Vector3d& dir, const Vector3d& v0, const Vector3d& v1, const Vector3d& v2, double* beta, double* gamma, double* t);
+  bool rayTriangleIntersection(const Vector3d& origin, const Vector3d& dir, const Vector3d& v0, const Vector3d& v1, const Vector3d& v2, double* beta, double* gamma, double* t, int& counter);
   //bool rayTriangleIntersection(const Matrix3d& mtm, const Vector3d& AL, double* beta, double* gamma, double* t);
   Vector3i getColour(const double& t);
   void writeImage(const std::string& out_file);

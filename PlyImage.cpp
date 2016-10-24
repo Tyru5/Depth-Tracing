@@ -211,7 +211,7 @@ void PlyImage::readData(ifstream& istr, ModelObject& obj, Face& faces){
     F[i] = Face( tmpface(1), tmpface(2), tmpface(3) );
     F[i].map(vertices);
     faces.addFace(F[i]);
-    F[i].pprint();
+    // F[i].pprint();
   }
 
   
