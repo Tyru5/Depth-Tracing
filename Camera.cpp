@@ -241,7 +241,9 @@ bool Camera::rayTriangleIntersection(const Vector3d& origin, const Vector3d& dir
 
   // Find vectors for two edges sharing V1 (which is A in my case):
   Vector3d e1 = v1-v0;
+  // cout << "e1 = \n" << e1 << endl;
   Vector3d e2 = v2-v0;
+  // cout << "e2 = \n" << e2 << endl;
   
   //Begin calculating determinant - also used to calculate Beta parameter
   Pvec = dir.cross(e2);
@@ -292,35 +294,39 @@ void Camera::computeDist(const ModelObject& obj, const Face& faces){
 
   // ~Example test cases from SageMath~
   /*
-    Vector3d v0(6,0,0);
-    Vector3d v1(0,6,0);
-    Vector3d v2(0,0,6);
-
-    Vector3d O(1,1,1);
-    Vector3d D(1,0,0);
-    D = D/D.norm();
-  */
+  Vector3d v0(6,0,0);
+  Vector3d v1(0,6,0);
+  Vector3d v2(0,0,6);
   
+  Vector3d O(1,1,1);
+  Vector3d D(1,0,0);
+  D = D/D.norm();
+  */  
+
   int num_faces = obj.get_faces();
-  cout << "num_faces = " << num_faces << endl;
+  // cout << "num_faces = " << num_faces << endl;
   
   double beta;
   double gamma;
   double t;
   
-  Vector3d O,D; // origin, direction
-  Vector3d v0,v1,v2; // face vertices
+  Vector3d O(0,0,0);
+  Vector3d D(0,0,0); // origin, direction
+  
+  Vector3d v0(0,0,0);
+  Vector3d v1(0,0,0);
+  Vector3d v2(0,0,0); // face vertices
 
   // allocate space for ts:
   ts = vector< vector< double > >(width, vector<double>(height) );
 
-  for(int i = 0; i < width; i++){ // for each pixel on the image plane...
-    for(int c = 0; c < height; c++){
+  for(int i = 0; i < 1; i++){ // for each pixel on the image plane...
+    for(int c = 0; c < 1; c++){
       
       O = Rays[i][c].origin;
-      // cout << "O = \n" << O << endl;
+      cout << "O = \n" << O << endl;
       D = Rays[i][c].direction;
-      // cout << "D = \n" << D << endl;
+      cout << "D = \n" << D << endl;
       
       for(int j = 0; j < num_faces; j++){ // for each face in the .ply file...
 	v0 = faces.getFace(j).getA();
@@ -342,12 +348,12 @@ void Camera::computeDist(const ModelObject& obj, const Face& faces){
 	}
 	
       }// end faces for loop.
-
+      
     }// end inner for loop.
   }// end outer for loop.
-
+  
   // print_ts(ts);
-
+  
 }
 
 Vector3i Camera::getColour(const double& t){
