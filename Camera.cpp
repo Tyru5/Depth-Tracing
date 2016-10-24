@@ -28,6 +28,7 @@ void print_res(const vector< int >& r);
 void print_bounds(const vector< double >& pb);
 Vector3d cramersRule(const Matrix3d& mtm, const Vector3d& al);
 
+
 // Macros:
 #define DEBUG false
 #define EPSILON 0.00001
@@ -314,7 +315,7 @@ void Camera::computeDist(const ModelObject& obj, const Face& faces){
   */  
 
   int num_faces = obj.get_faces();
-  // cout << "num_faces = " << num_faces << endl;
+  cout << "num_faces = " << num_faces << endl;
   
   double beta;
   double gamma;
@@ -331,6 +332,7 @@ void Camera::computeDist(const ModelObject& obj, const Face& faces){
   ts = vector< vector< double > >(width, vector<double>(height) );
 
   int counter = 1;
+  int t_counter = 1;
   
   for(int i = 0; i < width; i++){ // for each pixel on the image plane...
     for(int c = 0; c < height; c++){
@@ -353,45 +355,56 @@ void Camera::computeDist(const ModelObject& obj, const Face& faces){
 	  // cout << "computed t val = " << t << endl;
 	  // cout << "Beta: " << beta << endl;
 	  // cout << "Gamma: " << gamma << endl;
-	  ts[i][c] = t;
+	  if( t_counter == 1 ){
+	    ts[i][c] = t;
+	    t_counter++; // <-- to get the lowest t values computed for each ray
+	  }else{
+	    if( ts[i][c] <  t ) ts[i][c] = t;
+	  }
 	}else{
 	  // cout << "ray didn't intersect with triangle face!" << endl;
 	  ts[i][c] = 0;
 	}
-	
+
       }// end faces for loop.
       
     }// end inner for loop.
   }// end outer for loop.
 
+  // print_ts(ts);
+  
   cout << "Depth t runs from " << tmin << " to " << tmax << endl;
   
 }
 
-Vector3i Camera::getColour(const double& t){
-
-  if(t == 0){
-    return Vector3i(239,239,239);
+void Camera::getColour(const vector<vector<double>>& tvals){
+  
+      
+  if(t_distance == 0){
+    pixels(i,0) = 239;
+    pixels(i,1) = 239;
+    pixels(i,2) = 239;
   }
   
-  int ratio = 2 * (t - tmin) / (tmax - tmin);
-  int r = max(0, 255 * (1 - ratio));
-  int b = max(0, 255 * (ratio - 1)); 
-  int g = 255 - b - r;
+  
+  int ratio = 2 * (t_distance - tmin) / (tmax - tmin);
+  int red = max(0, 255 * (1 - ratio));
+  int blue = max(0, 255 * (ratio - 1)); 
+  int green = 255 - blue - red;
+  
+  pixels(i,0) = red;
+  pixels(i,1) = blue;
+  pixels(i,2) = green;
+  
 
-  Vector3i rgb(3);
-  rgb(0) = r;
-  rgb(1) = b;
-  rgb(2) = g;
+}
 
-  return rgb;  
+  cout << pixels << endl;
+
 }
 
 void Camera::writeImage(const string& out_file){
 
-  //STILL HAVE TO WORK ON THIS!
-  Vector3i rgbRes;
-  
   ofstream out( out_file );
   if( !out ) cout << "Sorry! Couldn't write out the file: " << out_file << endl;
 
@@ -399,13 +412,18 @@ void Camera::writeImage(const string& out_file){
   out << "P3 " << endl;
   out << width << " " << height << " 255" << endl;
 
-  // start writing out pixels:
-  for(int i = 0; i < ( width*3); i++){
-    for(int c = 0; c < height; c++){
-      rgbRes = getColour( ts[i][c] );
-      out << rgbRes(0) << " " << rgbRes(1) << " " << rgbRes(2) << endl;;
-    }
-  }
+  getColour(ts);
+  
+  // // start writing out pixels:
+  // for(int i = 0; i < width; i++){ // <-- have to figure this out
+  //   for(int c = 0; c < height; c++){
+  //     // Make sure it is red, green , then last blue      
+  //     // out << pixels(i,c). << " " << pixels(2) << " " << pixels(1) << endl;;
+
+  //     out << pixels(i,c) << " " << pixels(i,c) << " " << pixels(i,c) << endl;
+      
+  //   }
+  // }
 
   out.close();
 
@@ -425,6 +443,17 @@ void print_res(const vector<int>& r){
   for(int i = 0; i < static_cast<int>( r.size() ); i++){
     cout << "res[" << i << "]:" << r[i] << endl;
   }
+}
+
+void Camera::print_ts(const vector<vector<double>>& vect){
+  for(int i =  0; i < width; i++){
+    for(int c = 0; c < height; c++){
+      cout << vect[i][c] << " ";
+    }
+    cout << endl;
+  }
+
+  
 }
 
 Vector3d cramersRule(const Matrix3d& mtm, const Vector3d& al){

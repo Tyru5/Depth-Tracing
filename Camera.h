@@ -29,12 +29,13 @@ class Camera{
   void buildRM();
   void definePixelPt();
   void defineRays();
-
+  void print_ts(const std::vector<std::vector<double>>& vect);
+  
   // Where the magic happens:
   void computeDist(const ModelObject& obj, const Face& faces);
   bool rayTriangleIntersection(const Vector3d& origin, const Vector3d& dir, const Vector3d& v0, const Vector3d& v1, const Vector3d& v2, double* beta, double* gamma, double* t, int& counter);
   //bool rayTriangleIntersection(const Matrix3d& mtm, const Vector3d& AL, double* beta, double* gamma, double* t);
-  Vector3i getColour(const double& t);
+  void getColour(const std::vector< std::vector<double>>& ts);
   void writeImage(const std::string& out_file);
   
 
@@ -91,6 +92,9 @@ class Camera{
   // 2d array to hold all t's:
   std::vector< std::vector< double > > ts; 
 
+  // to hold pixel values:
+  std::vector<int> pixels;
+  
   double tmin;
   double tmax;
 
