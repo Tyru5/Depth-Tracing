@@ -17,6 +17,7 @@
 using Eigen::Matrix4d;
 using Eigen::Vector3d;
 using Eigen::MatrixXi;
+using Eigen::Vector3i;
 
 class Camera{
 
@@ -34,7 +35,7 @@ class Camera{
   
   // Where the magic happens:
   void computeDist(const Face& current_face);
-  void getColour(const std::vector< std::vector<double>>& ts);
+  Vector3i getColour(const double& tval);
   void writeImage(const std::string& out_file);
   void rayTriangleIntersection(const ModelObject& obj, const Face& face);
 

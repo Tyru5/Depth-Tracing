@@ -22,6 +22,7 @@ using Eigen::Matrix3d;
 using Eigen::Matrix4d;
 using Eigen::Vector3d;
 using Eigen::MatrixXi;
+using Eigen::Vector3i;
 
 // function declarations:
 void print_res(const vector< int >& r);
@@ -324,7 +325,7 @@ void Camera::rayTriangleIntersection(const ModelObject& obj, const Face& face){
 
   int number_of_faces = obj.get_faces();
 
- // allocate space for ts:
+  // allocate space for ts:
   ts = vector< vector< double > >(width, vector<double>( height, -1.0)  );
 
   // print_ts(ts);
@@ -335,44 +336,37 @@ void Camera::rayTriangleIntersection(const ModelObject& obj, const Face& face){
   }
 
   // print_ts(ts);
-
+  cout << "Polygon count: " << number_of_faces << endl;
+  cout << "Depth t runs from " << tmin << " " << tmax << endl;
   
 }
 
-void Camera::getColour(const vector<vector<double>>& tvals){
+Vector3i Camera::getColour(const double& t_distance){
 
-  pixels.resize(height, 3);
+  Vector3i res_rgb(3);
+  
+  if( t_distance >= 0 ){
+    
+    double  ratio = 2 * (t_distance - tmin) / (tmax - tmin);
+    int red = (int) max(0.0, 255.0 * (1.0 - ratio));
+    int blue = (int) max(0.0, 255.0 * (ratio - 1.0)); 
+    int green = 255 - blue - red;
+    
+    res_rgb(0) = red;
+    res_rgb(1) = green;
+    res_rgb(2) = blue;
+    
+    
+  }else{
 
-
-  int row_counter = 0;
-  for(int i = 0; i < width; i++){
-    for(int c = 0; c < height; c++){
-      
-      double t_distance = tvals[i][c];
-      
-      if( t_distance >= 0 ){
-	
-	double  ratio = 2 * (t_distance - tmin) / (tmax - tmin);
-	int red = (int) max(0.0, 255.0 * (1.0 - ratio));
-	int blue = (int) max(0.0, 255.0 * (ratio - 1.0)); 
-	int green = 255 - blue - red;
-	
-	pixels(row_counter, 0) = red;
-	pixels(row_counter, 1) = green;
-	pixels(row_counter,2) = blue;
-	
-	row_counter++;
-	
-      }
-      
-      pixels(row_counter, 0) = 239;
-      pixels(row_counter, 1) = 239;
-      pixels(row_counter,2) = 239;
-      
-      row_counter++;
-      
-    }
+    res_rgb(0) = 239;
+    res_rgb(1) = 239;
+    res_rgb(2) = 239;
+    
   }
+
+
+  return res_rgb;
   
 }
 
@@ -385,18 +379,14 @@ void Camera::writeImage(const string& out_file){
   out << "P3 " << endl;
   out << width << " " << height << " 255" << endl;
 
-  getColour(ts);
-  
-  // start writing out pixels:
-  for(int i = 0; i < height; i++){
-    for(int c = 0; i < 3; c++){
-
-      // writing out pixels:
-      out << pixels(i,c) <<  " " << pixels(i,c) << " " << pixels(i,c) << endl;
-      
+  //start writing out pixels:
+  Vector3i rgb(3);
+  for(int i = 0; i < width; i++){
+    for(int c = 0; c < height; c++){
+      rgb = getColour( ts[i][c] );
+      out << rgb(0) << " " << rgb(1) << " " << rgb(2) << endl;
     }
   }
-  
   
   out.close();
 
