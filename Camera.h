@@ -8,6 +8,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <limits>
 #include <Eigen/Dense>
 #include "ModelObject.h"
 #include "Ray.h"
@@ -33,8 +34,6 @@ class Camera{
   
   // Where the magic happens:
   void computeDist(const ModelObject& obj, const Face& faces);
-  bool rayTriangleIntersection(const Vector3d& origin, const Vector3d& dir, const Vector3d& v0, const Vector3d& v1, const Vector3d& v2, double* beta, double* gamma, double* t, int& counter);
-  //bool rayTriangleIntersection(const Matrix3d& mtm, const Vector3d& AL, double* beta, double* gamma, double* t);
   void getColour(const std::vector< std::vector<double>>& ts);
   void writeImage(const std::string& out_file);
   
@@ -92,13 +91,8 @@ class Camera{
   // 2d array to hold all t's:
   std::vector< std::vector< double > > ts; 
 
-  // to hold pixel values:
-  std::vector< std::vector<int> > redc;
-  std::vector< std::vector<int> > greenc;
-  std::vector< std::vector<int> > bluec;
-  
-  double tmin;
-  double tmax;
+  double tmin = std::numeric_limits<int>::max(); // max int
+  double tmax = 0;
 
 };
 

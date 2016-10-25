@@ -44,7 +44,7 @@ int main(int argc, char *argv[]){
   // Compute t => point of intersection or 'how far we have to travel down the ray to intersect with the plane'
   cmra.computeDist(obj1,faces);
   // Write the image out:
-  cmra.writeImage( argv[3] );
+  // cmra.writeImage( argv[3] );
   
   
   return 0;
