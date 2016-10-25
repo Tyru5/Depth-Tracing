@@ -93,7 +93,9 @@ class Camera{
   std::vector< std::vector< double > > ts; 
 
   // to hold pixel values:
-  std::vector<int> pixels;
+  std::vector< std::vector<int> > redc;
+  std::vector< std::vector<int> > greenc;
+  std::vector< std::vector<int> > bluec;
   
   double tmin;
   double tmax;

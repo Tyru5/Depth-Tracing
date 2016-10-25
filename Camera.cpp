@@ -315,7 +315,7 @@ void Camera::computeDist(const ModelObject& obj, const Face& faces){
   */  
 
   int num_faces = obj.get_faces();
-  cout << "num_faces = " << num_faces << endl;
+  // cout << "num_faces = " << num_faces << endl;
   
   double beta;
   double gamma;
@@ -355,12 +355,12 @@ void Camera::computeDist(const ModelObject& obj, const Face& faces){
 	  // cout << "computed t val = " << t << endl;
 	  // cout << "Beta: " << beta << endl;
 	  // cout << "Gamma: " << gamma << endl;
-	  if( t_counter == 1 ){
+	  // if( t_counter == 1 ){
 	    ts[i][c] = t;
-	    t_counter++; // <-- to get the lowest t values computed for each ray
-	  }else{
-	    if( ts[i][c] <  t ) ts[i][c] = t;
-	  }
+	    // t_counter++; // <-- to get the lowest t values computed for each ray
+	    //}else{
+	    //if( ts[i][c] <  t ) ts[i][c] = t;
+	    // }
 	}else{
 	  // cout << "ray didn't intersect with triangle face!" << endl;
 	  ts[i][c] = 0;
@@ -378,29 +378,38 @@ void Camera::computeDist(const ModelObject& obj, const Face& faces){
 }
 
 void Camera::getColour(const vector<vector<double>>& tvals){
-  
-      
-  if(t_distance == 0){
-    pixels(i,0) = 239;
-    pixels(i,1) = 239;
-    pixels(i,2) = 239;
+ 
+  redc = vector<vector<int> >(  width,vector<int>(height, -1));
+  greenc = vector<vector<int> >(width,vector<int>(height, -1));
+  bluec = vector<vector<int> >( width,vector<int>(height, -1));
+
+  for(int x = 0; x < width; x++){
+    for(int y = 0; y < height; y++){
+
+      double t_distance = tvals[x][y];
+      // cout << t_distance << endl;
+      if( t_distance == 0){
+	// cout << "t_distance == 0!" << endl;
+	redc[x][y] = 239;
+	bluec[x][y] = 239;
+	greenc[x][y] = 239;
+      }else{
+
+	// cout << "t val = " << t_distance << endl;
+	
+	int ratio = 2 * (t_distance - tmin) / (tmax - tmin);
+	int red = max(0, 255 * (1 - ratio));
+	int blue = max(0, 255 * (ratio - 1));
+	int green = 255 - blue - red;
+	
+	redc[x][y] = red;
+	bluec[x][y] = blue;
+	greenc[x][y] = green;
+      }
+
+    }
   }
   
-  
-  int ratio = 2 * (t_distance - tmin) / (tmax - tmin);
-  int red = max(0, 255 * (1 - ratio));
-  int blue = max(0, 255 * (ratio - 1)); 
-  int green = 255 - blue - red;
-  
-  pixels(i,0) = red;
-  pixels(i,1) = blue;
-  pixels(i,2) = green;
-  
-
-}
-
-  cout << pixels << endl;
-
 }
 
 void Camera::writeImage(const string& out_file){
@@ -414,16 +423,13 @@ void Camera::writeImage(const string& out_file){
 
   getColour(ts);
   
-  // // start writing out pixels:
-  // for(int i = 0; i < width; i++){ // <-- have to figure this out
-  //   for(int c = 0; c < height; c++){
-  //     // Make sure it is red, green , then last blue      
-  //     // out << pixels(i,c). << " " << pixels(2) << " " << pixels(1) << endl;;
-
-  //     out << pixels(i,c) << " " << pixels(i,c) << " " << pixels(i,c) << endl;
-      
-  //   }
-  // }
+  // start writing out pixels:
+  for(int i = 0; i < width; i++){ // <-- have to figure this out
+    for(int c = 0; c < height; c++){
+      // Make sure it is red, green , then last blue      
+      out << redc[i][c] << " " << greenc[i][c] << " " << bluec[i][c] << endl;
+    }
+  }
 
   out.close();
 
@@ -452,8 +458,6 @@ void Camera::print_ts(const vector<vector<double>>& vect){
     }
     cout << endl;
   }
-
-  
 }
 
 Vector3d cramersRule(const Matrix3d& mtm, const Vector3d& al){
