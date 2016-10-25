@@ -21,7 +21,7 @@ using namespace std;
 using Eigen::Matrix3d;
 using Eigen::Matrix4d;
 using Eigen::Vector3d;
-using Eigen::Vector3i;
+using Eigen::MatrixXi;
 
 // function declarations:
 void print_res(const vector< int >& r);
@@ -174,6 +174,7 @@ void Camera::definePixelPt(){
   
   for(int i = 0; i < width; i++){
     for(int j = 0; j < height; j++){
+      // cout << "i,j" << i << " " << j  << endl;
       double px = i/(width-1)  * (right-left) + left;
       double py = j/(height-1) * (top-bottom) + bottom;
       // Creating th pixel --> in world coordinates:
@@ -205,7 +206,7 @@ void Camera::defineRays(){
 
 
 // Algorithm for Ray Triangle Intersection:
-void Camera::computeDist(const ModelObject& obj, const Face& faces){
+void Camera::computeDist(const Face& current_face){
 
   /*For each pixel, throw ray out of focal point
     and calculate colour along ray;
@@ -223,8 +224,8 @@ void Camera::computeDist(const ModelObject& obj, const Face& faces){
   D = D/D.norm();
   */  
 
-  int num_faces = obj.get_faces();
-  cout << "Polygon count: " << num_faces << endl;
+  // int num_faces = obj.get_faces();
+  // cout << "Polygon count: " << num_faces << endl;
   
   double beta;
   double gamma;
@@ -241,11 +242,9 @@ void Camera::computeDist(const ModelObject& obj, const Face& faces){
   Matrix3d Mx1,Mx2,Mx3;
   double detMTM, detMTM1, detMTM2, detMTM3;
   
-  // allocate space for ts:
-  ts = vector< vector< double > >(width, vector<double>(height) );
+ 
 
-  int t_counter = 0;
-  int t_doesnt = 0;
+  // cout << faces << endl;
   
   for(int i = 0; i < width; i++){ // for each pixel on the image plane...
     for(int c = 0; c < height; c++){
@@ -255,102 +254,126 @@ void Camera::computeDist(const ModelObject& obj, const Face& faces){
       D = Rays[i][c].direction;
       // cout << "D = \n" << D << endl;
       
-      for(int j = 0; j < num_faces; j++){ // for each face in the .ply file...
-	// cout << faces.getFace(j) << endl;
-	A = faces.getFace(j).getA();
-	// cout << "A = \n" << A << endl;
-	B = faces.getFace(j).getB();
-	// cout << "B = \n" << B << endl;
-	C = faces.getFace(j).getC();
-	// cout << "C = \n" << C << endl;
-
-	// Find vectors for two edges sharing V1 (which is A in my case):
-	Vector3d AB = A-B;
-	Vector3d AC = A-C;
-	Vector3d al = A-O;
-
-	mtm.col(0) = AB;
-	mtm.col(1) = AC;
-	mtm.col(2) = D;
-
-	// cout << mtm << endl;
-
-	detMTM = mtm.determinant();
+     
+      A = current_face.getA();
+      // cout << "A = \n" << A << endl;
+      B = current_face.getB();
+      // cout << "B = \n" << B << endl;
+      C = current_face.getC();
+      // cout << "C = \n" << C << endl;
+      
+      // Find vectors for two edges sharing V1 (which is A in my case):
+      Vector3d AB = A-B;
+      Vector3d AC = A-C;
+      Vector3d al = A-O;
+      
+      mtm.col(0) = AB;
+      mtm.col(1) = AC;
+      mtm.col(2) = D;
+      
+      // cout << mtm << endl;
+      
+      detMTM = mtm.determinant();
+      
+      Mx1 = mtm;
+      Mx2 = mtm;
+      Mx3 = mtm;
+      
+      Mx1.col(0) = al;  
+      detMTM1 = Mx1.determinant();
+      
+      Mx2.col(1) = al;
+      detMTM2 = Mx2.determinant();
+      
+      Mx3.col(2) = al;
+      detMTM3 = Mx3.determinant();
+      
+      beta  = detMTM1/detMTM;
+      // cout << "Beta: " << beta << endl;      
+      gamma = detMTM2/detMTM;
+      // cout << "Gamma: " << gamma << endl;
+      t     = detMTM3/detMTM;
+      // cout << " computed t: = " << t << endl;
+      
+      // Error Checking:
+      if( beta >= 0.0 && gamma >= 0.0 && (beta+gamma <= 1.0) && t >= 0.0){ // ray intersect!
+	// cout << "Ray intersected with face!" << endl;
+	// cout << " computed t intersected: = " << t << endl;
+	// cout << "Beta: " << beta << endl;
+	// cout << "Gamma: " << gamma << endl;
 	
-	Mx1 = mtm;
-	Mx2 = mtm;
-	Mx3 = mtm;
-
-	Mx1.col(0) = al;  
-	detMTM1 = Mx1.determinant();
-	
-	Mx2.col(1) = al;
-	detMTM2 = Mx2.determinant();
-	
-	Mx3.col(2) = al;
-	detMTM3 = Mx3.determinant();
-	
-	beta  = detMTM1/detMTM;
-	gamma = detMTM2/detMTM;
-	t     = detMTM3/detMTM;
-
-	// Error Checking:
-	if( beta >= 0 && gamma >= 0 && (beta+gamma <= 1.0) && t >= 0){ // ray intersect!
-	  // cout << " computed t: = " << t << endl;
-	  // cout << "Beta: " << beta << endl;
-	  // cout << "Gamma: " << gamma << endl;
-	  
+	// checking t val:
+	if( t <= ts[i][c] || ts[i][c] == -1){
 	  ts[i][c] = t;
-	  t_counter++;
 	  // setting max and min t:
 	  if(t < tmin) tmin = t;
 	  if(t > tmax) tmax = t;
-	    
-	}else{
-	  // cout << "ray didn't intersect with triangle face!" << endl;
-	  ts[i][c] = 0;
-	  t_doesnt++;
 	}
-
-      }// end faces for loop.
+	
+	t_counter++;
+	
+      }
       
     }// end inner for loop.
   }// end outer for loop.
 
+}
+
+
+void Camera::rayTriangleIntersection(const ModelObject& obj, const Face& face){
+
+  int number_of_faces = obj.get_faces();
+
+ // allocate space for ts:
+  ts = vector< vector< double > >(width, vector<double>( height, -1.0)  );
+
+  // print_ts(ts);
+  
+  for(int i = 0; i < number_of_faces; i++){
+    // cout << face.getFace(i) << endl;
+    computeDist( face.getFace(i) );
+  }
+
   // print_ts(ts);
 
-  cout << "t counter = " << t_counter << endl;
-  cout << "ray doesn't intersect = " << t_doesnt << endl;
-  cout << "Depth t runs from " << tmin << " to " << tmax << endl;
   
 }
 
 void Camera::getColour(const vector<vector<double>>& tvals){
 
-  for(int x = 0; x < height; x++){
-    for(int y = 0; y < width; y++){
+  pixels.resize(height, 3);
 
-      double t_distance = tvals[x][y];
-      // cout << t_distance << endl;
-      if( t_distance == 0){
-	// cout << "t_distance == 0!" << endl;
-         = 239;
-	 = 239;
-	 = 239;
-      }else{
 
-	// cout << "t val = " << t_distance << endl;
+  int row_counter = 0;
+  for(int i = 0; i < width; i++){
+    for(int c = 0; c < height; c++){
+      
+      double t_distance = tvals[i][c];
+      
+      if( t_distance >= 0 ){
 	
-	int ratio = 2 * (t_distance - tmin) / (tmax - tmin);
-	int red = max(0, 255 * (1 - ratio));
-	int blue = max(0, 255 * (ratio - 1));
+	double  ratio = 2 * (t_distance - tmin) / (tmax - tmin);
+	int red = (int) max(0.0, 255.0 * (1.0 - ratio));
+	int blue = (int) max(0.0, 255.0 * (ratio - 1.0)); 
 	int green = 255 - blue - red;
 	
+	pixels(row_counter, 0) = red;
+	pixels(row_counter, 1) = green;
+	pixels(row_counter,2) = blue;
+	
+	row_counter++;
+	
       }
-
+      
+      pixels(row_counter, 0) = 239;
+      pixels(row_counter, 1) = 239;
+      pixels(row_counter,2) = 239;
+      
+      row_counter++;
+      
     }
   }
-
+  
 }
 
 void Camera::writeImage(const string& out_file){
@@ -365,10 +388,11 @@ void Camera::writeImage(const string& out_file){
   getColour(ts);
   
   // start writing out pixels:
-  for(int i = 0; i < width*3; i++){
-    for(int c = 0; c < height; c++){
-      
-      
+  for(int i = 0; i < height; i++){
+    for(int c = 0; i < 3; c++){
+
+      // writing out pixels:
+      out << pixels(i,c) <<  " " << pixels(i,c) << " " << pixels(i,c) << endl;
       
     }
   }

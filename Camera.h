@@ -16,7 +16,7 @@
 
 using Eigen::Matrix4d;
 using Eigen::Vector3d;
-using Eigen::Vector3i;
+using Eigen::MatrixXi;
 
 class Camera{
 
@@ -33,10 +33,10 @@ class Camera{
   void print_ts(const std::vector<std::vector<double>>& vect);
   
   // Where the magic happens:
-  void computeDist(const ModelObject& obj, const Face& faces);
+  void computeDist(const Face& current_face);
   void getColour(const std::vector< std::vector<double>>& ts);
   void writeImage(const std::string& out_file);
-  
+  void rayTriangleIntersection(const ModelObject& obj, const Face& face);
 
   
   // class instance variables:
@@ -91,9 +91,13 @@ class Camera{
   // 2d array to hold all t's:
   std::vector< std::vector< double > > ts; 
 
+  MatrixXi pixels;
+  
   double tmin = std::numeric_limits<int>::max(); // max int
   double tmax = 0;
 
+  int t_counter = 0;
+  
 };
 
 #endif // CAMERA_H_INCLUDE
