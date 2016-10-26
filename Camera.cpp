@@ -28,10 +28,8 @@ using Eigen::Vector3i;
 void print_res(const vector< int >& r);
 void print_bounds(const vector< double >& pb);
 
-
 // Macros:
 #define DEBUG false
-#define EPSILON 0.00001
 
 
 void Camera::parseCameraSpecs(const string& cameraModel){
@@ -150,18 +148,6 @@ void Camera::buildRM(){
   */
   VV = WV.cross(UV);
   if(DEBUG) cout << "The V unit vector is: \n" << VV << endl;
-
-  // Setting up rotation Matrix:
-  RM.resize(4,4);
-  RM << UV(0),UV(1),UV(2),0, VV(0),VV(1),VV(2),0, WV(0),WV(1),WV(2),0, 0,0,0,1;
-  if(DEBUG){
-    cout << "The RM is = \n" << RM << endl;
-    Matrix4d test(4,4);
-    test = RM.transpose() * RM;
-    cout << "Really rotation matrix?\n" << test << endl;
-  }
-
-  if(DEBUG) cout << "Rotation Matrix is: \n" << RM << endl;
 
 }
 
@@ -297,14 +283,16 @@ void Camera::computeDist(const Face& current_face){
       // cout << " computed t: = " << t << endl;
       
       // Error Checking:
-      if( beta >= EPSILON && gamma >= EPSILON && (beta+gamma <= 1.0) && t >= EPSILON){ // ray intersect!
+      if( beta >= 0.0 && gamma >= 0.0 && (beta+gamma <= 1.0) && t >= 0.0){ // ray intersect!
 	// cout << "Ray intersected with face!" << endl;
-	// cout << " computed t intersected: = " << t << endl;
+	if(t == 4.37375){
+	  cout << " computed t intersected: = " << t << endl;
+	}
 	// cout << "Beta: " << beta << endl;
 	// cout << "Gamma: " << gamma << endl;
 	
 	// checking t val:
-	if( t <= ts[i][c] || ts[i][c] == -1){
+	if( t <= ts[i][c] || ts[i][c] == -1.0){
 	  ts[i][c] = t;
 	  // setting max and min t:
 	  if(t < tmin) tmin = t;
@@ -322,11 +310,11 @@ void Camera::computeDist(const Face& current_face){
 void Camera::rayTriangleIntersection(const ModelObject& obj, const Face& face){
 
   int number_of_faces = obj.get_faces();
-
   // allocate space for ts:
   ts = vector< vector< double > >(width, vector<double>( height, -1.0)  );
 
   // print_ts(ts);
+  // cout << "\n" << endl;
   
   for(int i = 0; i < number_of_faces; i++){
     // cout << face.getFace(i) << endl;
@@ -342,7 +330,9 @@ void Camera::rayTriangleIntersection(const ModelObject& obj, const Face& face){
 Vector3i Camera::getColour(const double& t_distance){
 
   Vector3i res_rgb(3);
-  
+
+  // cout << t_distance << " ";
+
   if( t_distance >= 0 ){
     
     double  ratio = 2 * (t_distance - tmin) / (tmax - tmin);
@@ -363,7 +353,7 @@ Vector3i Camera::getColour(const double& t_distance){
     
   }
 
-  cout << res_rgb << endl;
+  // cout << res_rgb << endl;
   
   return res_rgb;
   
@@ -380,8 +370,8 @@ void Camera::writeImage(const string& out_file){
 
   //start writing out pixels:
   Vector3i rgb(3);
-  for(int i = 0; i < width; i++){
-    for(int c = 0; c < height; c++){
+  for(int i = (height-1); i >= 0; i--){
+    for(int c = 0; c < width; c++){ // i know, not that good.. but hey
       rgb = getColour( ts[c][i] );
       out << rgb(0) << " " << rgb(1) << " " << rgb(2) << endl;
     }
