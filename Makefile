@@ -1,5 +1,5 @@
 # Tyrus Malmstrom
-# Makefile for P1 assignment
+# Makefile for P3 assignment
 # CS410 :: intro to graphics
 
 CXX		= g++
@@ -53,4 +53,4 @@ clean:
 
 package:
 	@echo "Packaging up project directory..."
-	tar -cvf $(EXE).tar *.cpp *.h Makefile README.txt
+	tar -cvf $(EXE).tar *.cpp *.h ./Eigen Makefile README.txt

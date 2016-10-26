@@ -22,6 +22,3 @@ color indicates relative distance from the image plane.
 
 ## 3. Example output
 ![Example App Image](./elle.png)
-
-## 4. After Rendering scene with airplane object:
-![Airplane](./out1.ppm)

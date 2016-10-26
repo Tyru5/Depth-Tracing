@@ -339,7 +339,8 @@ void Camera::writeImage(const string& out_file){
   for(int i = (height-1); i >= 0; i--){
     for(int c = 0; c < width; c++){ // i know, not that good.. but hey
       rgb = getColour( ts[c][i] );
-      out << rgb(0) << " " << rgb(1) << " " << rgb(2) << endl;
+      if( c == (width) ) out << endl;
+      else out << rgb(0) << " " << rgb(1) << " " << rgb(2) << " ";
     }
   }
   
