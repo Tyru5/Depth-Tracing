@@ -23,7 +23,7 @@ using Eigen::Vector3i;
 
 
 // Macros:
-#define DEBUG true
+#define DEBUG false
 
 
 void Camera::parseCameraSpecs(const string& cameraModel){
@@ -79,8 +79,8 @@ void Camera::parseCameraSpecs(const string& cameraModel){
   stringstream bounds_stream;
   getline(cmraModel, line);
   bounds_stream << line;
-  bounds_stream >> bounds_header >> bottom >> left >> top >> right;
-  if(DEBUG) cout << "Bottom, left, top, right is: " << bottom << " " <<  left << " " <<  top << " " <<  right << endl;
+  bounds_stream >> bounds_header >> left >> bottom >> right >> top; // CHANGED THIS! Now it works! was initially reading in bounds wrong.
+  if(DEBUG) cout << "Bottom, left, top, right is: " << left << " " <<  bottom << " " <<  right << " " <<  top << endl;
 
   // grab the resolution:
   stringstream res_stream;
@@ -288,7 +288,7 @@ void Camera::rayTriangleIntersection(const ModelObject& obj, const Face& face){
 
   // print_ts(ts);
   cout << "Polygon count: " << number_of_faces << endl;
-  find_tmin_tmax(ts) // THIS FIXED THE TMIN AND TMAX BUG
+  find_tmin_tmax(ts); // THIS FIXED THE TMIN AND TMAX BUG
   cout << "Depth t runs from " << tmin << " " << tmax << endl;
   
 }
