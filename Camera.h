@@ -97,7 +97,6 @@ class Camera{
   double tmin = std::numeric_limits<int>::max(); // max int
   double tmax = 0;
 
-  int t_counter = 0;
   
 };
 

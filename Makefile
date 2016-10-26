@@ -5,7 +5,7 @@
 CXX		= g++
 OBJS		=  raytracer.o ModelObject.o PlyImage.o Transformation.o Camera.o Ray.o Face.o
 DEBUG		= -g
-CPPFLAGS	= -Wall -std=c++11 -I. -c $(DEBUG) # The only thing that you need to keep in mind when compiling the
+CPPFLAGS	= -Wall -std=c++11 -I. -Ofast -c $(DEBUG) # The only thing that you need to keep in mind when compiling the
 							      # above program is that the compiler must be able to find the Eigen header files.
 							      # The directory in which you placed Eigen's source code must be in the include path
 LDFLAGS		= -Wall $(DEBUG) # order of targets actualy matter

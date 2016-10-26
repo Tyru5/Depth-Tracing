@@ -31,7 +31,7 @@ void print_bounds(const vector< double >& pb);
 
 // Macros:
 #define DEBUG false
-// #define EPSILON 0.00001
+#define EPSILON 0.00001
 
 
 void Camera::parseCameraSpecs(const string& cameraModel){
@@ -172,7 +172,7 @@ void Camera::definePixelPt(){
   /*
     Code that creates a 3D point that represents a pixel on th image plane:
   */
-  
+
   for(int i = 0; i < width; i++){
     for(int j = 0; j < height; j++){
       // cout << "i,j" << i << " " << j  << endl;
@@ -297,7 +297,7 @@ void Camera::computeDist(const Face& current_face){
       // cout << " computed t: = " << t << endl;
       
       // Error Checking:
-      if( beta >= 0.0 && gamma >= 0.0 && (beta+gamma <= 1.0) && t >= 0.0){ // ray intersect!
+      if( beta >= EPSILON && gamma >= EPSILON && (beta+gamma <= 1.0) && t >= EPSILON){ // ray intersect!
 	// cout << "Ray intersected with face!" << endl;
 	// cout << " computed t intersected: = " << t << endl;
 	// cout << "Beta: " << beta << endl;
@@ -310,8 +310,6 @@ void Camera::computeDist(const Face& current_face){
 	  if(t < tmin) tmin = t;
 	  if(t > tmax) tmax = t;
 	}
-	
-	t_counter++;
 	
       }
       
@@ -383,7 +381,7 @@ void Camera::writeImage(const string& out_file){
   Vector3i rgb(3);
   for(int i = 0; i < width; i++){
     for(int c = 0; c < height; c++){
-      rgb = getColour( ts[i][c] );
+      rgb = getColour( ts[c][i] );
       out << rgb(0) << " " << rgb(1) << " " << rgb(2) << endl;
     }
   }
