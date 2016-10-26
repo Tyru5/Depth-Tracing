@@ -18,15 +18,9 @@
 
 // namespace:
 using namespace std;
-using Eigen::Matrix3d;
-using Eigen::Matrix4d;
 using Eigen::Vector3d;
-using Eigen::MatrixXi;
 using Eigen::Vector3i;
 
-// function declarations:
-void print_res(const vector< int >& r);
-void print_bounds(const vector< double >& pb);
 
 // Macros:
 #define DEBUG false
@@ -82,32 +76,18 @@ void Camera::parseCameraSpecs(const string& cameraModel){
   if(DEBUG) cout << "The distance away from the image plane is: " << dist << "\n" <<  endl;
 
   // grab the bounds:
-  vector< double > bounds(4);
   stringstream bounds_stream;
   getline(cmraModel, line);
   bounds_stream << line;
-  bounds_stream >> bounds_header >> bounds[0] >> bounds[1] >> bounds[2] >> bounds[3];
-  bottom = bounds[0];
-  left = bounds[1];
-  top = bounds[2];
-  right = bounds[3];
-  if(DEBUG){
-    print_bounds( bounds );
-    cout << "Bottom, left, top, right is: " << bottom << " " <<  left << " " <<  top << " " <<  right << endl;
-  }
+  bounds_stream >> bounds_header >> bottom >> left >> top >> right;
+  if(DEBUG) cout << "Bottom, left, top, right is: " << bottom << " " <<  left << " " <<  top << " " <<  right << endl;
 
   // grab the resolution:
-  vector<int> resolution(2);
   stringstream res_stream;
   getline(cmraModel, line);
   res_stream << line;
-  res_stream >> res_header >> resolution[0] >> resolution[1];
-  width = resolution[0];
-  height = resolution[1];
-  if(DEBUG){
-    print_res( resolution );
-    cout << "width and height is: " << width << " " <<  " " << height << endl;
-  }
+  res_stream >> res_header >> width >> height;
+  if(DEBUG) cout << "width and height is: " << width << " " <<  " " << height << endl;
 
   cout << "Target resolution: " << width << " by " << height << endl;
 
@@ -117,16 +97,6 @@ void Camera::parseCameraSpecs(const string& cameraModel){
 void Camera::buildRM(){
 
   // Build Camera system origin and axes in world coordinates:
-
-  // FOUND OUT THAT i DON'T NEED THE EYE TRANSLATION MATRIX!
-  Vector3d eye = EYE;
-  eye = -eye;
-  if(DEBUG) cout << eye << endl;
-
-  eye_translation.resize(4,4);
-  eye_translation << 1,0,0,eye(0), 0,1,0,eye(1), 0,0,1,eye(2), 0,0,0,1;
-  if(DEBUG) cout << "eye_translation matrix = \n" << eye_translation << endl;
-
   /*
     Going to use the process described in Lecture Week 5:
     1) Point the z axis away --> Camera looks down the negative z axis:
@@ -383,19 +353,6 @@ void Camera::writeImage(const string& out_file){
 
 
 // ==================HELPER FUNCTIONS=========================
-
-void print_bounds(const vector<double>& bp){
-  for(int i = 0; i < static_cast<int>( bp.size() ); i++){
-    cout << "bounds[" << i << "]:" << bp[i] << endl;
-  }
-}
-
-
-void print_res(const vector<int>& r){
-  for(int i = 0; i < static_cast<int>( r.size() ); i++){
-    cout << "res[" << i << "]:" << r[i] << endl;
-  }
-}
 
 void Camera::print_ts(const vector<vector<double>>& vect){
   for(int i =  0; i < width; i++){

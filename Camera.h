@@ -16,7 +16,6 @@
 
 using Eigen::Matrix4d;
 using Eigen::Vector3d;
-using Eigen::MatrixXi;
 using Eigen::Vector3i;
 
 class Camera{
@@ -67,21 +66,13 @@ class Camera{
 
   double dist;
 
-  std::vector< double > bounds;
   double bottom;
   double left;
   double top;
   double right;
 
-  std::vector< int > resolution;
   double width; // had to change this to double to have correct division
   double height;
-
-  // translation matrix for eye:
-  Matrix4d eye_translation;
-
-  // Rotation Matrix:
-  Matrix4d RM;
 
   // 2d array for holding all the pixel Points on the image plane:
   std::vector< std::vector< Vector3d > > pointsOIM;
@@ -92,8 +83,6 @@ class Camera{
   // 2d array to hold all t's:
   std::vector< std::vector< double > > ts; 
 
-  MatrixXi pixels;
-  
   double tmin = std::numeric_limits<int>::max(); // max int
   double tmax = 0;
 
