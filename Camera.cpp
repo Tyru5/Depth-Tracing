@@ -23,7 +23,7 @@ using Eigen::Vector3i;
 
 
 // Macros:
-#define DEBUG false
+#define DEBUG true
 
 
 void Camera::parseCameraSpecs(const string& cameraModel){
@@ -255,18 +255,13 @@ void Camera::computeDist(const Face& current_face){
       // Error Checking:
       if( beta >= 0.0 && gamma >= 0.0 && (beta+gamma <= 1.0) && t >= 0.0){ // ray intersect!
 	// cout << "Ray intersected with face!" << endl;
-	if(t == 4.37375){
-	  cout << " computed t intersected: = " << t << endl;
-	}
+	// cout << " computed t intersected: = " << t << endl;
 	// cout << "Beta: " << beta << endl;
 	// cout << "Gamma: " << gamma << endl;
 	
 	// checking t val:
 	if( t <= ts[i][c] || ts[i][c] == -1.0){
 	  ts[i][c] = t;
-	  // setting max and min t:
-	  if(t < tmin) tmin = t;
-	  if(t > tmax) tmax = t;
 	}
 	
       }
@@ -293,6 +288,7 @@ void Camera::rayTriangleIntersection(const ModelObject& obj, const Face& face){
 
   // print_ts(ts);
   cout << "Polygon count: " << number_of_faces << endl;
+  find_tmin_tmax(ts) // THIS FIXED THE TMIN AND TMAX BUG
   cout << "Depth t runs from " << tmin << " " << tmax << endl;
   
 }
@@ -361,4 +357,21 @@ void Camera::print_ts(const vector<vector<double>>& vect){
     }
     cout << endl;
   }
+}
+
+void Camera::find_tmin_tmax(std::vector<std::vector<double>>& tvals){
+
+  for(int i = 0; i < width; i++){
+    for(int c = 0; c < height; c++){
+
+      if(tvals[i][c] >= 0){
+
+	if(tvals[i][c] < tmin) tmin = tvals[i][c];
+	if(tvals[i][c] > tmax) tmax = tvals[i][c];
+	
+      }
+      
+    }
+  }
+  
 }

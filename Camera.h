@@ -14,7 +14,6 @@
 #include "Ray.h"
 #include "Face.h"
 
-using Eigen::Matrix4d;
 using Eigen::Vector3d;
 using Eigen::Vector3i;
 
@@ -31,6 +30,8 @@ class Camera{
   void definePixelPt();
   void defineRays();
   void print_ts(const std::vector<std::vector<double>>& vect);
+  void find_tmin_tmax(std::vector<std::vector<double>>& tvals);
+  
   
   // Where the magic happens:
   void computeDist(const Face& current_face);
@@ -83,8 +84,8 @@ class Camera{
   // 2d array to hold all t's:
   std::vector< std::vector< double > > ts; 
 
-  double tmin = std::numeric_limits<int>::max(); // max int
-  double tmax = 0;
+  double tmin = std::numeric_limits<double>::max(); // max double
+  double tmax = std::numeric_limits<double>::min(); // min double
 
   
 };
