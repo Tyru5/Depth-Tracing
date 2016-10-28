@@ -10,7 +10,8 @@
 #include "Camera.h"
 #include "PlyImage.h"
 #include "ModelObject.h"
-#include "Transformation.h"
+#include "Face.h"
+
 
 using namespace std;
 
