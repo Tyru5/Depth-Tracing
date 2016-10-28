@@ -11,7 +11,7 @@ CPPFLAGS	= -Wall -std=c++11 -I. -Ofast -c $(DEBUG) # The only thing that you nee
 LDFLAGS		= -Wall $(DEBUG) # order of targets actualy matter
 EXE 		= raytracer
 
-all: raytracer
+all: clean raytracer #by default, make my makefile clean up the project directory, just to be safe.
 
 raytracer: $(OBJS)
 	$(CXX) $(LDFLAGS) $(OBJS) -o raytracer

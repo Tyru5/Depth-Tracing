@@ -336,11 +336,10 @@ void Camera::writeImage(const string& out_file){
 
   //start writing out pixels:
   Vector3i rgb(3);
-  for(int i = (height-1); i >= 0; i--){
-    for(int c = 0; c < width; c++){ // i know, not that good.. but hey
+  for(int i = (height-1); i >= 0; i--, out << endl){ // awesome!
+    for(int c = 0; c < width; c++ ){ // i know, not that good.. but hey
       rgb = getColour( ts[c][i] );
-      if( c == (width) ) out << endl;
-      else out << rgb(0) << " " << rgb(1) << " " << rgb(2) << " ";
+      out << rgb(0) << " " << rgb(1) << " " << rgb(2) << " ";
     }
   }
   
