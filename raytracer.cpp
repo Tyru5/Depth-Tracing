@@ -86,10 +86,8 @@ int main(int argc, char *argv[]){
   // Parse the .ply file:
   ply.readPlyFile(argv[2], obj1, faces);
 
-  // Defined pixel's on image plane:
-  cmra.definePixelPt();
-  // Calculate Rays: THESE TWO CAN BE ONE FUNCTION! ALSO OPTIMZE THIS!
-  cmra.defineRays();
+  // Calculate Rays:
+  cmra.calculateRays();
   // Compute t => point of intersection or 'how far we have to travel down the ray to intersect with the plane'
   cmra.rayTriangleIntersection(obj1, faces);
   // Write the image out:

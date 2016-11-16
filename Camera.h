@@ -27,8 +27,7 @@ class Camera{
   void parseCameraSpecs(const std::string& cameraModel);
 
   void buildRM();
-  void definePixelPt();
-  void defineRays();
+  void calculateRays();
   void print_ts(const std::vector<std::vector<double>>& vect);
   void find_tmin_tmax(std::vector<std::vector<double>>& tvals);
   
@@ -74,9 +73,6 @@ class Camera{
 
   double width; // had to change this to double to have correct division
   double height;
-
-  // 2d array for holding all the pixel Points on the image plane:
-  std::vector< std::vector< Vector3d > > pointsOIM;
 
   // array of rays hey...
   std::vector< std::vector< Ray > > Rays;

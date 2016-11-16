@@ -121,46 +121,38 @@ void Camera::buildRM(){
 
 }
 
-void Camera::definePixelPt(){
+// UPDATED:
+void Camera::calculateRays(){
 
-  pointsOIM = vector< vector< Vector3d > >(width, vector< Vector3d >(height) );
-
+  Rays = vector< vector< Ray > >(width, vector<Ray>(height) );
+  
   /*
     Code that creates a 3D point that represents a pixel on th image plane:
+    As well as the rays. Get direction of each ray.
   */
 
   for(int i = 0; i < width; i++){
     for(int j = 0; j < height; j++){
       // cout << "i,j" << i << " " << j  << endl;
+      
       double px = i/(width-1)  * (right-left) + left;
       double py = j/(height-1) * (top-bottom) + bottom;
+      
       // Creating th pixel --> in world coordinates:
       // Awesome stuff man, vector + vector + vector + vector == point in the world.
       Vector3d pixelPoint = EYE + (dist * WV) + (px * UV) + (py * VV);
       // cout << "The pixel Point (3D point) in the world is: \n" << pixelPoint << endl;
-      pointsOIM[i][j] = pixelPoint;
-    }
-  }
-
-}
-
-void Camera::defineRays(){
-
-  /*
-    Code that creates the rays. Get direction of each ray.
-  */
-  Rays = vector< vector< Ray > >(width, vector<Ray>(height) );
-  for(int i = 0; i < width; i++){
-    for(int c = 0; c < height; c++){
-      Vector3d rayd = pointsOIM[i][c] - EYE;
+      
+      Vector3d rayd = pixelPoint - EYE;
       rayd = rayd/rayd.norm();
-      Rays[i][c] =  Ray( pointsOIM[i][c], rayd );
+      Rays[i][j] =  Ray( pixelPoint, rayd );
       // Rays[i][c].pprint();
+      
+      
     }
   }
 
 }
-
 
 // Algorithm for Ray Triangle Intersection:
 void Camera::computeDist(const Face& current_face){
