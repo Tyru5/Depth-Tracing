@@ -305,9 +305,9 @@ Vector3i Camera::getColour(const double& t_distance){
     
   }else{
 
-    res_rgb(0) = 239;
-    res_rgb(1) = 239;
-    res_rgb(2) = 239;
+    res_rgb(0) = 0;
+    res_rgb(1) = 0;
+    res_rgb(2) = 0;
     
   }
 
